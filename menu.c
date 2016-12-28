@@ -1,25 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
-#include <menu.h>
+#include "menu.h"
 
 
 void menujeu(void)
 {
-  SDL_Surface *un = NULL;
-  SDL_Surface *deux = NULL;
-  SDL_Surface *quitter = NULL;
-  SDL_Surface *ecran = NULL;
-  SDL_Surface *menu = NULL;
-
+  SDL_Surface *un = NULL, *deux = NULL, *quitter = NULL, *ecran = NULL, *menu = NULL;
+  SDL_Rect positionMenu, positionUn, positionDeux, positionQuit;
   SDL_Event event;
-  SDL_Rect positionMenu;
-  SDL_Rect positionUn;
-  SDL_Rect positionDeux;
-  SDL_Rect positionQuit;
-
-  int continuer = 1;
-  int choixmenu = 0;
+  int continuer = 1, choixmenu = 0;
 
   // LANCER LA SDL
 
@@ -46,17 +36,13 @@ void menujeu(void)
   un = SDL_LoadBMP("1J_SELECTION.bmp");
   deux = SDL_LoadBMP("2J.bmp");
   quitter = SDL_LoadBMP("QUIT.bmp");
-  
- SDL_BlitSurface(menu, NULL, ecran, &positionMenu);
-  SDL_BlitSurface(un, NULL, ecran, &positionUn);
-  SDL_BlitSurface(deux, NULL, ecran, &positionDeux);
-  SDL_BlitSurface(quitter, NULL, ecran, &positionQuit);
 
-  // ECRAN EN PAUSE
+  // BOUCLE D'EVENEMENT 
 
   while(continuer)
   {
     SDL_WaitEvent(&event);
+
     switch (event.type)
     {
       case SDL_QUIT:
@@ -72,12 +58,11 @@ void menujeu(void)
         case SDLK_UP: 
             choixmenu--;
             break;
-
       }
     }
     
     
-  // HISTOIRE DE SAVOIR QUEL RUBRIQUE DOIT ETRE ALLUMÉ
+	// HISTOIRE DE SAVOIR QUEL RUBRIQUE DOIT ETRE ALLUMÉ
 
     if(choixmenu == 0)
     {
@@ -109,21 +94,21 @@ void menujeu(void)
 
 
   
-  // BLITSURFACE
+	// BLITSURFACE
 
-  SDL_BlitSurface(menu, NULL, ecran, &positionMenu);
-  SDL_BlitSurface(un, NULL, ecran, &positionUn);
-  SDL_BlitSurface(deux, NULL, ecran, &positionDeux);
-  SDL_BlitSurface(quitter, NULL, ecran, &positionQuit);
+	SDL_BlitSurface(menu, NULL, ecran, &positionMenu);
+	SDL_BlitSurface(un, NULL, ecran, &positionUn);
+	SDL_BlitSurface(deux, NULL, ecran, &positionDeux);
+	SDL_BlitSurface(quitter, NULL, ecran, &positionQuit);
 
-  SDL_Flip(ecran);
 
-  }  
-    
+	// MAJ DE L'ECRAN
+	
+	SDL_Flip(ecran);
   }
-
-
-// RENOUVELLER L'ECRAN
+  
+  return;
+}
 
 
 

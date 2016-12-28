@@ -14,6 +14,10 @@ struct Objet
 
 typedef struct Objet Objet;
 
+// DIMENSIONS DE LA FENETRE
+
+#define LARGEUR 675
+#DEFINE HAUTEUR 675
 
 // CONSTANTES VALEURES DES CASES
 
