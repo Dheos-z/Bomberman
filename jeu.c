@@ -1,165 +1,299 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"constante.h"
-#include<time.h>
-#include"jeu.h"
 #include<SDL/SDL.h>
+#include"fonction.h"
 
+// NOMBRE DE MUR DANS LA MAP
 
-
-void remplissage(int map[T_TAB][T_TAB])
+int nombreMur(int map[T_TAB][T_TAB])
 {
   int i,j;
-  int alea = 0;
-  srand(time(NULL));
-  int compteurM = 0;
+  int cmpMur = 0;
+
+  for(i = 0; i < T_TAB; i++)
+  {
+    for(j = 0; j<T_TAB; j++)
+    {
+      if(map[i][j] == MUR)
+      {
+        cmpMur++;
+      }
+    }
+  }
+    return cmpMur;
+}
+
+// NOMBRE DE BRIQUE DANS LA MAP
+
+int nombreBrique(int map[T_TAB][T_TAB])
+{
+  int i,j;
+  int cmpBrique = 0;
+
+  for(i = 0; i < T_TAB; i++)
+  {
+    for(j = 0; j < T_TAB; j++)
+    {
+      if(map[i][j] == BRIQUE)
+      {
+        cmpBrique++;
+      }
+    }
+  }
+
+    return cmpBrique;
+}
+
+
+
+
+
+int main(void)
+{
+  SDL_Surface *ecran = NULL;
+  SDL_Event event;
+  SDL_Surface *mur = NULL;
+  SDL_Surface *brique = NULL;
+  SDL_Surface *bombe = NULL;
+  SDL_Surface *vide = NULL;
+
+   // perso
+  SDL_Surface *bomberHaut = NULL;
+  SDL_Surface *bomberBas = NULL;
+  SDL_Surface *bomberGauche = NULL;
+  SDL_Surface *bomberDroite = NULL;
+
+  SDL_Rect *positionMur = NULL;
+  SDL_Rect *positionBrique = NULL;
+  SDL_Rect *positionVide = NULL;
+  SDL_Rect bomber;
+  SDL_Rect positionBombe;
+
+
+
+  int map[T_TAB][T_TAB];
+  int continuer = 1;
+  int i,j,k;
+  int direction = BAS;
+  int compteurM, compteurB;
+  int nbMur = 0;
+  int nbBrique = 0;
+  int nbVide = 0;
   int compteurV = 0;
-  int compteurB = 0;
-
-
-// ON REMPLI LES BORDURES DE LA MAP (MUR)
-
-
-  for(i = 0; i<15; i++)
-  {
-    map[i][0] = MUR;
-    map[i][T_TAB - 1] = MUR;
-    map[0][i] = MUR;
-    map[T_TAB - 1][i] = MUR;
-  }
-
-// TOUT LE RESTE SERA ICI EGALE A ZERO (POUR LE MOMENT)  
-
-  for(i = 1; i<(T_TAB - 1); i++)
-  {
-    for(j = 1; j<(T_TAB - 1); j++)
-    {
-      map[i][j] = VIDE;
-    }
-  }
-
-
-
-// UNE CASE SUR DEUX ON REMPLACE LES 0 PAR DES 1 POUR METTRE DES OBSTACLES
-
-  for(i = 2; i<(T_TAB - 1); i++)
-  {
-    for(j = 2; j<(T_TAB - 1); j++)
-    {
-      if(i%2 == 0 && j%2 == 0)
-      {
-        map[i][j] = MUR;
-      }
-    }
-  }
-
-// ON REMPLIT ICI LES BRIQUES INDISPENSABLES
   
-  for(j = 4; j<11; j++)
-  {
-    map[1][j] = BRIQUE;
-    map[13][j] = BRIQUE;
-  }
 
-  for(i = 4; i<11; i++)
-  {
-    map[i][1] = BRIQUE;
-    map[i][13] = BRIQUE;
-  }
-  for(i = 3; i<13; i++)
-  {
-    for(j = 2; j<13; j++)
-    {
-      map[3][j] = BRIQUE;
-      map[11][j] = BRIQUE;
-      map[j][3] = BRIQUE;
-      map[j][11] = BRIQUE;
-    }
-  }
+  remplissage(map);
+  compteurM = nombreMur(map);
+  compteurB = nombreBrique(map);
+  compteurV = T_TAB * T_TAB - (compteurM + compteurB);
 
-  for(i = 2; i<13; i++)
-  {
-    if(map[2][i] == 0)
-    {
-      map[2][i] = BRIQUE;
-      map[12][i] = BRIQUE;
-      map[i][2] = BRIQUE;
-      map[i][12] = BRIQUE;
-    }
-  }
+  SDL_Init(SDL_INIT_VIDEO);
+  ecran = SDL_SetVideoMode(675, 675, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+  SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 0, 150, 0));
+  SDL_WM_SetCaption("Super Bombermus", NULL);
 
+  // ON DONNE LEURS VALEURS AUX SURFACES
 
+  mur = SDL_LoadBMP("MUR.bmp");
+  positionMur = (SDL_Rect*) malloc(compteurM * sizeof(SDL_Rect));
 
-// ICI NOUS ALLONS REMPLIR LE CENTRE DE LA MAP DE FACON ALEATOIRE
+  brique = SDL_LoadBMP("BRIQUE.bmp");
+  positionBrique = (SDL_Rect*) malloc(compteurB * sizeof(SDL_Rect));
 
-  for(i = 4; i<10; i++)
-  {
-    for(j = 4; j<10; j++)
-    {
-      if (map[i][j] == 0)
-      {
-        alea = rand() % 8;
-        if(alea !=0)
-        {
-          if(map[i][j] == 0)
-          {
-              map[i][j] = BRIQUE;  // SI LA VALEURE ALEATOIRE VAUT 1, ON REMPLACE PAR BRIQUE
-          }
-        }
-      }
-    }
-  }
+  vide = SDL_LoadBMP("VIDE.bmp");
+  positionVide = (SDL_Rect*) malloc(compteurV * sizeof(SDL_Rect));
+  
+  bomberBas = SDL_LoadBMP("BAS.bmp");
+  bomberHaut = SDL_LoadBMP("HAUT.bmp");
+  bomberGauche = SDL_LoadBMP("GAUCHE.bmp");
+  bomberDroite = SDL_LoadBMP("DROITE.bmp");
+  bombe = SDL_LoadBMP("BOMBE.bmp");
 
-// INITIALISATION DU PERSONNAGE
-
-for(i = 0; i<T_TAB; i++)
-{
-  for(j = 0; j<T_TAB; j++)
-  {
-    if(map[i][j] == MUR)
-    {
-      compteurM++;
-    }
-    else if(map[i][j] == BRIQUE)
-    {
-      compteurB++;
-    }
-  }
-}
-
-
-}
-
-
-
-
-void affichage(int map[T_TAB][T_TAB])
-{
-  int i,j;
-
-  // AFFICHAGE DE LA MAP
-
+  // INITIALISATION DES POSITIONS
+  
   for(i = 0; i<T_TAB; i++)
   {
     for(j = 0; j<T_TAB; j++)
     {
-      if(map[i][j] == VIDE)
+      if(map[i][j] == MUR)
       {
-        printf("  ");
+        positionMur[nbMur].x = i*CASE;
+        positionMur[nbMur].y = j*CASE;
+        nbMur++;
       }
-      else
+      else if(map[i][j] == BRIQUE)
       {
-        printf("%d ", map[i][j]);
+        positionBrique[nbBrique].x = i*CASE;
+        positionBrique[nbBrique].y = j*CASE;
+        nbBrique++;
+      }
+      else if(map[i][j] == VIDE)
+      {
+        positionVide[nbVide].x = i*CASE;
+        positionVide[nbVide].y = j*CASE;
+        nbVide++;
       }
     }
-    printf("\n");
   }
+
+  bomber.x = CASE;
+  bomber.y = CASE;
+  
+  positionBombe.x = 676;
+  positionBombe.y = 676;
+
+  nbMur = 0;
+  nbBrique = 0;
+
+
+
+  SDL_EnableKeyRepeat(10,10);
+
+  // ECRAN PAUSE
+
+  while(continuer)
+  {
+    SDL_WaitEvent(&event);
+    switch(event.type)
+    {
+      case SDL_QUIT:
+      continuer = 0;
+      break;
+
+      // MOUVEMENT DU PERSO 1
+
+      case SDL_KEYDOWN:
+        switch(event.key.keysym.sym)
+        {
+          case SDLK_RIGHT:
+          if(map[(bomber.x)/CASE+1][(bomber.y)/CASE] == VIDE
+           /* && map[(bomber.x)/CASE+1][(bomber.y)/CASE] != BRIQUE*/)
+          {
+            bomber.x+=CASE;
+            direction = DROITE;
+          }
+          break;
+
+          case SDLK_LEFT:
+         if(map[(bomber.x)/CASE-1][(bomber.y)/CASE] == VIDE 
+           /*&& map[(bomber.x)/CASE-1][(bomber.y)/CASE] != BRIQUE*/)
+         {
+            bomber.x-=CASE;
+            direction = GAUCHE;
+         }
+
+          break;
+
+          case SDLK_UP:
+          if(map[(bomber.x)/CASE][(bomber.y)/CASE-1] == VIDE 
+            /*&& map[(bomber.x)/CASE][(bomber.y)/CASE-1] != BRIQUE*/)
+
+          {
+            bomber.y-=CASE;
+            direction = HAUT;
+          }
+          break;
+
+          case SDLK_DOWN:
+          if(map[(bomber.x)/CASE][(bomber.y)/CASE+1] == VIDE
+           /* && map[(bomber.x)/CASE][(bomber.y)/CASE+1] != BRIQUE*/)
+          {
+            bomber.y+=CASE;
+            direction = BAS;
+          }
+          break;
+
+          case SDLK_SPACE:
+          map[(positionBombe.x)/CASE][(positionBombe.y)/CASE] = VIDE;
+          positionBombe.x = bomber.x;
+          positionBombe.y = bomber.y;
+          map[(positionBombe.x)/CASE][(positionBombe.y)/CASE] = BOMBE;
+          break;
+
+        }
+    }
+
+
+    // BLIT
+    
+    SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 0, 150, 0)); 
+
+    for(i = 0; i<compteurM; i++)
+    {
+      SDL_BlitSurface(mur, NULL, ecran, &positionMur[i]);
+    }
+
+    for(i = 0; i<compteurB; i++)
+    {
+      SDL_BlitSurface(brique, NULL, ecran, &positionBrique[i]);
+    }
+
+    for(i = 0; i<compteurV; i++)
+    {
+      SDL_BlitSurface(vide, NULL, ecran, &positionVide[i]);
+    }
+    
+
+   if(positionBombe.x != 0 && positionBombe.y != 0)
+   {
+      SDL_SetColorKey(bombe, SDL_SRCCOLORKEY,
+      SDL_MapRGB(bombe->format, 255, 255, 0));
+      SDL_BlitSurface(bombe, NULL, ecran, &positionBombe);
+   }
+
+
+    for(i = 0; i<T_TAB; i++)
+    {
+      for(j = 0; j<T_TAB; j++)
+      {
+        switch(direction)
+        {
+          case HAUT:
+          SDL_SetColorKey(bomberHaut, SDL_SRCCOLORKEY,
+          SDL_MapRGB(bomberHaut->format, 255, 255, 0));
+          SDL_BlitSurface(bomberHaut, NULL, ecran, &bomber);
+          break;
+          
+          case BAS:
+          SDL_SetColorKey(bomberBas, SDL_SRCCOLORKEY,
+          SDL_MapRGB(bomberBas->format, 255, 255, 0));
+          SDL_BlitSurface(bomberBas, NULL, ecran, &bomber);
+          break;
+
+          case DROITE:
+          SDL_SetColorKey(bomberDroite, SDL_SRCCOLORKEY,
+          SDL_MapRGB(bomberDroite->format, 255, 255, 0));
+          SDL_BlitSurface(bomberDroite, NULL, ecran, &bomber);
+          break;
+
+          case GAUCHE:
+          SDL_SetColorKey(bomberGauche, SDL_SRCCOLORKEY,
+          SDL_MapRGB(bomberGauche->format, 255, 255, 0));
+          SDL_BlitSurface(bomberGauche, NULL, ecran, &bomber);
+          break;
+        }
+      }
+    
+
+    SDL_Flip(ecran);
+
+    }
+  }
+
+  
+  free(positionMur);
+  free(positionBrique);
+  SDL_FreeSurface(brique);
+  SDL_FreeSurface(mur);
+  SDL_FreeSurface(vide);
+  SDL_Quit();
+
+  return EXIT_SUCCESS;
 }
 
 
 
 
-
-
-
-
+  
+  
