@@ -1,6 +1,11 @@
-/* Puisqu'on travaille sur le jeu en lui-même, j'ai fait en sorte qu'à l'exécution on arrive direct sur la map de jeu (plutôt que passer par le menu à chaque fois)
- * But : ouvrir une partie depuis le main, en essayant d'utiliser les fonctions existantes,
- * pourquoi pas ouvrir le niveau depuis un fichier texte
+/* 14/01/17
+ * J'ai trouvé sur Openclassrooms un nouveau système pour blitter les surfaces aux bonnes positions :
+ * déclarer 1 surface de chaque objet est suffisant. J'ai fait en sorte que le niveau
+ * soit lu dans un fichier carte.txt. Je suis en train de structurer le déroulement du programme
+ * dans les différents fichiers source pour qu'ils fonctionnent ensemble.
+ * Seuls les fichiers main.c et jeu.c fonctionnent ensemble pour l'instant
+ * 
+ * Zak
  */
 
 
@@ -8,12 +13,16 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include "menu.h" 
+#include "constante.h"
+#include "jeu.h"
 
 
+// ECRAN TITRE
 
 int main(void)
 {
     SDL_Surface *ecran = NULL;
+    SDL_Event event;
     
     // INITIALISATIONS
     
@@ -22,8 +31,9 @@ int main(void)
     SDL_WM_SetCaption("Bomberman", NULL);
     
     
+    jouerPartie(ecran);
     
-    
+    SDL_Quit();
     
     return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
 #include"constante.h"
 #include<SDL/SDL.h>
 
-void remplissage(int map[T_TAB][T_TAB]);
-void affichage(int map[T_TAB][T_TAB]);
+void remplissage(int map[NB_CASES][NB_CASES]);
+void affichage(int map[NB_CASES][NB_CASES]);
 
 int main(void)
 {
@@ -12,8 +12,8 @@ int main(void)
   *bomberHaut = NULL, *bomberBas = NULL, *bomberDroite = NULL,
   *bomberGauche = NULL;
   SDL_Event event;
-  int map[T_TAB][T_TAB];
-  SDL_Rect position[T_TAB][T_TAB];
+  int map[NB_CASES][NB_CASES];
+  SDL_Rect position[NB_CASES][NB_CASES];
   SDL_Rect bomber;
   int continuer = 1;
   int i,j;
@@ -35,9 +35,9 @@ int main(void)
   bomberDroite = SDL_LoadBMP("DROITE.bmp");
   bomberGauche = SDL_LoadBMP("GAUCHE.bmp");
 
-  for(i = 0; i<T_TAB; i++)
+  for(i = 0; i<NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
 
         position[i][j].x = i*CASE;
@@ -94,9 +94,9 @@ while (continuer)
 
   
 
-  for(i = 0; i<T_TAB; i++)
+  for(i = 0; i<NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       switch(direction)
       {

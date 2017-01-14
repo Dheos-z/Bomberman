@@ -7,7 +7,7 @@
 
 
 
-void remplissage(int map[T_TAB][T_TAB])
+void remplissage(int map[NB_CASES][NB_CASES])
 {
   int i,j;
   int alea = 0;
@@ -23,16 +23,16 @@ void remplissage(int map[T_TAB][T_TAB])
   for(i = 0; i<15; i++)
   {
     map[i][0] = MUR;
-    map[i][T_TAB - 1] = MUR;
+    map[i][NB_CASES - 1] = MUR;
     map[0][i] = MUR;
-    map[T_TAB - 1][i] = MUR;
+    map[NB_CASES - 1][i] = MUR;
   }
 
 // TOUT LE RESTE SERA ICI EGALE A ZERO (POUR LE MOMENT)  
 
-  for(i = 1; i<(T_TAB - 1); i++)
+  for(i = 1; i<(NB_CASES - 1); i++)
   {
-    for(j = 1; j<(T_TAB - 1); j++)
+    for(j = 1; j<(NB_CASES - 1); j++)
     {
       map[i][j] = VIDE;
     }
@@ -42,9 +42,9 @@ void remplissage(int map[T_TAB][T_TAB])
 
 // UNE CASE SUR DEUX ON REMPLACE LES 0 PAR DES 1 POUR METTRE DES OBSTACLES
 
-  for(i = 2; i<(T_TAB - 1); i++)
+  for(i = 2; i<(NB_CASES - 1); i++)
   {
-    for(j = 2; j<(T_TAB - 1); j++)
+    for(j = 2; j<(NB_CASES - 1); j++)
     {
       if(i%2 == 0 && j%2 == 0)
       {
@@ -112,9 +112,9 @@ void remplissage(int map[T_TAB][T_TAB])
 
 // INITIALISATION DU PERSONNAGE
 
-for(i = 0; i<T_TAB; i++)
+for(i = 0; i<NB_CASES; i++)
 {
-  for(j = 0; j<T_TAB; j++)
+  for(j = 0; j<NB_CASES; j++)
   {
     if(map[i][j] == MUR)
     {
@@ -133,15 +133,15 @@ for(i = 0; i<T_TAB; i++)
 
 
 
-void affichage(int map[T_TAB][T_TAB])
+void affichage(int map[NB_CASES][NB_CASES])
 {
   int i,j;
 
   // AFFICHAGE DE LA MAP
 
-  for(i = 0; i<T_TAB; i++)
+  for(i = 0; i<NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       if(map[i][j] == VIDE)
       {

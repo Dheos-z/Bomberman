@@ -1,8 +1,8 @@
 #ifndef FONCTION_H
 #define FONCTION_H
 
-void remplissage(int map[T_TAB][T_TAB]);
-void affichage(int map[T_TAB][T_TAB]);
-void initPerso(int map[T_TAB][T_TAB]);
+void remplissage(int map[NB_CASES][NB_CASES]);
+void affichage(int map[NB_CASES][NB_CASES]);
+void initPerso(int map[NB_CASES][NB_CASES]);
 
 #endif

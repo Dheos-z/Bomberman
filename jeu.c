@@ -1,19 +1,158 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include"constante.h"
-#include<SDL/SDL.h>
-#include"fonction.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "constante.h"
+#include <SDL/SDL.h>
+#include "fonction.h"
+#include "jeu.h"
+
+
+
+
+int jouerPartie(SDL_Surface* ecran)
+{
+	SDL_Event event;
+	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL;
+	SDL_Surface *perso[4] = {NULL}, *persoActuel = NULL;
+	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0;
+	
+	// Initialisation des surfaces
+	
+	mur = SDL_LoadBMP("MUR.bmp");
+	brique = SDL_LoadBMP("BRIQUE.bmp");
+	bombe = SDL_LoadBMP("BOMBE.bmp");
+	
+	perso[BAS] = SDL_LoadBMP("BAS.bmp");
+	perso[HAUT] = SDL_LoadBMP("HAUT.bmp");
+	perso[GAUCHE] = SDL_LoadBMP("GAUCHE.bmp");
+	perso[DROITE] = SDL_LoadBMP("DROITE.bmp");
+	persoActuel = perso[BAS]; // On initialise le perso vers le bas
+	
+	// Lecture du niveau
+	
+	lireFichier(carte);
+	
+	
+	// Boucle des événements
+	
+	while(continuer)
+	{
+		SDL_PollEvent(&event);
+		
+		switch(event.type)
+		{
+			case SDL_QUIT: // Si on appuie sur la croix
+				continuer = 0;
+				break;
+		}
+		
+		// Mise à jour de l'écran
+		
+		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
+		blitterSurfaces(ecran, carte, mur, brique, bombe, persoActuel);
+		SDL_Flip(ecran);
+	}
+	
+	// Libération des surfaces
+	
+	SDL_FreeSurface(mur);
+	SDL_FreeSurface(brique);
+	SDL_FreeSurface(bombe);
+	for(i = 0; i < 4; i++)
+	{
+		SDL_FreeSurface(perso[i]);
+		// persoActuel est libéré dans cette boucle car il est égal à une des 4 surfaces libérées ici
+	}
+	
+	
+	return 0; // Pour l'instant
+}
+
+
+
+
+
+int lireFichier(int carte[][NB_CASES])
+{
+	FILE *fichier = NULL;
+	int i = 0, j = 0;
+	
+	fichier = fopen("carte.txt", "r"); // Ouverture du fichier représentant la carte en mode lecture seule
+	
+	if(fichier == NULL)
+	{
+		return 1; // Erreur lors de l'ouverture du fichier		
+	}
+	
+	for(i = 0; i < NB_CASES; i++)
+	{
+		for(j = 0; j < NB_CASES; j++)
+		{
+			carte[i][j] = fgetc(fichier) - '0'; /* Remplissage des valeurs de la carte. 
+												On retire '0' pour passer du char (lu dans le fichier) au int */
+		}
+		fgetc(fichier); // Pour lire le \n à la fin de chaque ligne
+	}
+	
+	fclose(fichier); // La base
+	
+	return 0;
+}
+
+
+void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
+					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *persoActuel)
+{
+	int i = 0, j = 0;
+	SDL_Rect position;
+	
+	for(i = 0; i < NB_CASES; i++)
+	{
+		position.y = i*CASE;
+		
+		for(j = 0; j < NB_CASES; j++)
+		{
+			position.x = j*CASE;
+			
+			switch(carte[i][j])
+			{
+				case MUR:
+					SDL_BlitSurface(mur, NULL, ecran, &position);
+					break;
+				
+				case BRIQUE:
+					SDL_BlitSurface(brique, NULL, ecran, &position);
+					break;
+					
+				case BOMBE:
+					SDL_BlitSurface(bombe, NULL, ecran, &position);
+					break;
+					
+				case PERSO:
+					SDL_BlitSurface(persoActuel, NULL, ecran, &position);
+					break;
+			}
+		}
+	}
+	
+	return;
+}
+
+
+
+
+
+/*
 
 // NOMBRE DE MUR DANS LA MAP
 
-int nombreMur(int map[T_TAB][T_TAB])
+int nombreMur(int map[NB_CASES][NB_CASES])
 {
   int i,j;
   int cmpMur = 0;
 
-  for(i = 0; i < T_TAB; i++)
+  for(i = 0; i < NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       if(map[i][j] == MUR)
       {
@@ -26,14 +165,14 @@ int nombreMur(int map[T_TAB][T_TAB])
 
 // NOMBRE DE BRIQUE DANS LA MAP
 
-int nombreBrique(int map[T_TAB][T_TAB])
+int nombreBrique(int map[NB_CASES][NB_CASES])
 {
   int i,j;
   int cmpBrique = 0;
 
-  for(i = 0; i < T_TAB; i++)
+  for(i = 0; i < NB_CASES; i++)
   {
-    for(j = 0; j < T_TAB; j++)
+    for(j = 0; j < NB_CASES; j++)
     {
       if(map[i][j] == BRIQUE)
       {
@@ -72,7 +211,7 @@ int main(void)
 
 
 
-  int map[T_TAB][T_TAB];
+  int map[NB_CASES][NB_CASES];
   int continuer = 1;
   int i,j,k;
   int direction = BAS;
@@ -86,7 +225,7 @@ int main(void)
   remplissage(map);
   compteurM = nombreMur(map);
   compteurB = nombreBrique(map);
-  compteurV = T_TAB * T_TAB - (compteurM + compteurB);
+  compteurV = NB_CASES * NB_CASES - (compteurM + compteurB);
 
   SDL_Init(SDL_INIT_VIDEO);
   ecran = SDL_SetVideoMode(675, 675, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
@@ -112,9 +251,9 @@ int main(void)
 
   // INITIALISATION DES POSITIONS
   
-  for(i = 0; i<T_TAB; i++)
+  for(i = 0; i<NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       if(map[i][j] == MUR)
       {
@@ -167,8 +306,8 @@ int main(void)
         switch(event.key.keysym.sym)
         {
           case SDLK_RIGHT:
-          if(map[(bomber.x)/CASE+1][(bomber.y)/CASE] == VIDE
-           /* && map[(bomber.x)/CASE+1][(bomber.y)/CASE] != BRIQUE*/)
+          if(map[(bomber.x)/CASE+1][(bomber.y)/CASE] == VIDE)
+           // && map[(bomber.x)/CASE+1][(bomber.y)/CASE] != BRIQUE
           {
             bomber.x+=CASE;
             direction = DROITE;
@@ -176,8 +315,8 @@ int main(void)
           break;
 
           case SDLK_LEFT:
-         if(map[(bomber.x)/CASE-1][(bomber.y)/CASE] == VIDE 
-           /*&& map[(bomber.x)/CASE-1][(bomber.y)/CASE] != BRIQUE*/)
+         if(map[(bomber.x)/CASE-1][(bomber.y)/CASE] == VIDE)
+           // && map[(bomber.x)/CASE-1][(bomber.y)/CASE] != BRIQUE
          {
             bomber.x-=CASE;
             direction = GAUCHE;
@@ -186,8 +325,8 @@ int main(void)
           break;
 
           case SDLK_UP:
-          if(map[(bomber.x)/CASE][(bomber.y)/CASE-1] == VIDE 
-            /*&& map[(bomber.x)/CASE][(bomber.y)/CASE-1] != BRIQUE*/)
+          if(map[(bomber.x)/CASE][(bomber.y)/CASE-1] == VIDE)
+            // && map[(bomber.x)/CASE][(bomber.y)/CASE-1] != BRIQUE
 
           {
             bomber.y-=CASE;
@@ -196,8 +335,8 @@ int main(void)
           break;
 
           case SDLK_DOWN:
-          if(map[(bomber.x)/CASE][(bomber.y)/CASE+1] == VIDE
-           /* && map[(bomber.x)/CASE][(bomber.y)/CASE+1] != BRIQUE*/)
+          if(map[(bomber.x)/CASE][(bomber.y)/CASE+1] == VIDE)
+           // && map[(bomber.x)/CASE][(bomber.y)/CASE+1] != BRIQUE
           {
             bomber.y+=CASE;
             direction = BAS;
@@ -243,9 +382,9 @@ int main(void)
    }
 
 
-    for(i = 0; i<T_TAB; i++)
+    for(i = 0; i<NB_CASES; i++)
     {
-      for(j = 0; j<T_TAB; j++)
+      for(j = 0; j<NB_CASES; j++)
       {
         switch(direction)
         {
@@ -294,6 +433,6 @@ int main(void)
 
 
 
-
+*/
   
   

@@ -6,14 +6,14 @@
 
 // NOMBRE DE MUR DANS LA MAP
 
-int nombreMur(int map[T_TAB][T_TAB])
+int nombreMur(int map[NB_CASES][NB_CASES])
 {
   int i,j;
   int cmpMur = 0;
 
-  for(i = 0; i < T_TAB; i++)
+  for(i = 0; i < NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       if(map[i][j] == MUR)
       {
@@ -26,14 +26,14 @@ int nombreMur(int map[T_TAB][T_TAB])
 
 // NOMBRE DE BRIQUE DANS LA MAP
 
-int nombreBrique(int map[T_TAB][T_TAB])
+int nombreBrique(int map[NB_CASES][NB_CASES])
 {
   int i,j;
   int cmpBrique = 0;
 
-  for(i = 0; i < T_TAB; i++)
+  for(i = 0; i < NB_CASES; i++)
   {
-    for(j = 0; j < T_TAB; j++)
+    for(j = 0; j < NB_CASES; j++)
     {
       if(map[i][j] == BRIQUE)
       {
@@ -72,7 +72,7 @@ int main(void)
 
 
 
-  int map[T_TAB][T_TAB];
+  int map[NB_CASES][NB_CASES];
   int continuer = 1;
   int i,j,k;
   int direction = BAS;
@@ -86,7 +86,7 @@ int main(void)
   remplissage(map);
   compteurM = nombreMur(map);
   compteurB = nombreBrique(map);
-  compteurV = T_TAB * T_TAB - (compteurM + compteurB);
+  compteurV = NB_CASES * NB_CASES - (compteurM + compteurB);
 
   SDL_Init(SDL_INIT_VIDEO);
   ecran = SDL_SetVideoMode(675, 675, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
@@ -112,9 +112,9 @@ int main(void)
 
   // INITIALISATION DES POSITIONS
   
-  for(i = 0; i<T_TAB; i++)
+  for(i = 0; i<NB_CASES; i++)
   {
-    for(j = 0; j<T_TAB; j++)
+    for(j = 0; j<NB_CASES; j++)
     {
       if(map[i][j] == MUR)
       {
@@ -243,9 +243,9 @@ int main(void)
    }
 
 
-    for(i = 0; i<T_TAB; i++)
+    for(i = 0; i<NB_CASES; i++)
     {
-      for(j = 0; j<T_TAB; j++)
+      for(j = 0; j<NB_CASES; j++)
       {
         switch(direction)
         {

@@ -2,9 +2,9 @@
 #define CONSTANTE_H
 
 
-#include<SDL/SDL.h>
+#include <SDL/SDL.h>
 
-// STRUCTURE 
+// STRUCTURES
 
 struct Objet
 {
@@ -14,31 +14,29 @@ struct Objet
 
 typedef struct Objet Objet;
 
-// DIMENSIONS DE LA FENETRE
+// DIMENSIONS
 
-#define LARGEUR 675
-#DEFINE HAUTEUR 675
+#define CASE 45 // Taille d'une case en pixels (A NE PAS MODIFIER)
+#define NB_CASES 15 // Nombre de cases de côté (A NE PAS MODIFIER)
 
-// CONSTANTES VALEURES DES CASES
+#define LARGEUR CASE*NB_CASES // Tailles de la fenêtre en pixels
+#define HAUTEUR CASE*NB_CASES
+
+// VALEURS DES OBJETS
 
 #define VIDE 0
-#define BRIQUE 2
 #define MUR 1
-#define MAX 100
+#define BRIQUE 2
 #define PERSO 3
 #define BOMBE 4
+#define MAX 100
 
-// CONSTANTES PIXEL
+// DIRECTIONS
 
-#define CASE 45
-#define T_TAB 15
-
-// CONSTANTES DIRECTION
-
-#define HAUT 1
-#define BAS 2
-#define DROITE 3
-#define GAUCHE 4
+#define HAUT 0
+#define BAS 1
+#define DROITE 2
+#define GAUCHE 3
 
 
 
