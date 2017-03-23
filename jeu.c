@@ -38,12 +38,16 @@ int jouerPartie(SDL_Surface* ecran)
 	{
 		SDL_PollEvent(&event);
 		
+		
+		
 		switch(event.type)
 		{
 			case SDL_QUIT: // Si on appuie sur la croix
 				continuer = 0;
 				break;
 		}
+		
+		
 		
 		// Mise à jour de l'écran
 		
