@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include"constante.h"
+#include"constante.h"  Bonjour
 #include<SDL/SDL.h>
 #include"jeu.h"
 
