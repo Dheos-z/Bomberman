@@ -1,9 +1,5 @@
-/* 14/01/17
- * J'ai trouvé sur Openclassrooms un nouveau système pour blitter les surfaces aux bonnes positions :
- * déclarer 1 surface de chaque objet est suffisant. J'ai fait en sorte que le niveau
- * soit lu dans un fichier carte.txt. Je suis en train de structurer le déroulement du programme
- * dans les différents fichiers source pour qu'ils fonctionnent ensemble.
- * Seuls les fichiers main.c et jeu.c fonctionnent ensemble pour l'instant
+/* 24/03/17
+ * Fait : déplacement de plusieurs joueurs à la fois
  * 
  * Zak
  */

@@ -12,10 +12,11 @@ int jouerPartie(SDL_Surface* ecran)
 {
 	SDL_Event event;
 	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL;
-	SDL_Surface *perso[4] = {NULL}, *persoActuel = NULL;
-	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0;
-	
-	// Initialisation des surfaces
+	SDL_Surface *perso[4] = {NULL};
+	Perso joueur[4];
+	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2;
+		
+	// Initialisation des surfaces et des positions
 	
 	mur = SDL_LoadBMP("MUR.bmp");
 	brique = SDL_LoadBMP("BRIQUE.bmp");
@@ -25,11 +26,23 @@ int jouerPartie(SDL_Surface* ecran)
 	perso[HAUT] = SDL_LoadBMP("HAUT.bmp");
 	perso[GAUCHE] = SDL_LoadBMP("GAUCHE.bmp");
 	perso[DROITE] = SDL_LoadBMP("DROITE.bmp");
-	persoActuel = perso[BAS]; // On initialise le perso vers le bas
+	joueur[0].persoActuel = perso[BAS]; // On initialise le perso vers le bas
+	joueur[1].persoActuel = perso[BAS];
+	
+	joueur[0].position.x = CASE;
+	joueur[0].position.y = CASE;
+	joueur[1].position.x = CASE;
+	joueur[1].position.y = 13*CASE;
+	
+	for(i=0; i<4; i++)
+	{
+		initialiserTouches(&joueur[i]);
+	}
 	
 	// Lecture du niveau
 	
 	lireFichier(carte);
+	afficherCarte(carte);
 	
 	
 	// Boucle des événements
@@ -45,14 +58,113 @@ int jouerPartie(SDL_Surface* ecran)
 			case SDL_QUIT: // Si on appuie sur la croix
 				continuer = 0;
 				break;
+				
+			// APPUI SUR UNE TOUCHE
+				
+        	case SDL_KEYDOWN:
+				
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						continuer = 0; // La touche ECHAP permet de quitter le jeu
+						break;
+
+					// TOUCHES PERSO 0
+					
+					case SDLK_UP:
+						joueur[0].touche[HAUT] = 1;
+						break;
+
+					case SDLK_DOWN:
+						joueur[0].touche[BAS] = 1;
+						break;
+
+					case SDLK_LEFT:
+						joueur[0].touche[GAUCHE] = 1;
+						break;
+
+					case SDLK_RIGHT:
+						joueur[0].touche[DROITE] = 1;
+
+						break;
+						
+					// TOUCHES PERSO 1
+					
+					case SDLK_z:
+						joueur[1].touche[HAUT] = 1;
+						break;
+
+					case SDLK_s:
+						joueur[1].touche[BAS] = 1;
+						break;
+
+					case SDLK_q:
+						joueur[1].touche[GAUCHE] = 1;
+						break;
+
+					case SDLK_d:
+						joueur[1].touche[DROITE] = 1;
+						break;
+				}	
+				break;	
+				
+			// RELACHEMENT D'UNE TOUCHE
+				
+        	case SDL_KEYUP:
+				
+				switch(event.key.keysym.sym)
+				{
+					// TOUCHES PERSO 0
+					
+					case SDLK_UP:
+						joueur[0].touche[HAUT] = 0;
+						break;
+
+					case SDLK_DOWN:
+						joueur[0].touche[BAS] = 0;
+						break;
+
+					case SDLK_LEFT:
+						joueur[0].touche[GAUCHE] = 0;
+						break;
+
+					case SDLK_RIGHT:
+						joueur[0].touche[DROITE] = 0;
+						break;
+						
+					// TOUCHES PERSO 1
+					
+					case SDLK_z:
+						joueur[1].touche[HAUT] = 0;
+						break;
+
+					case SDLK_s:
+						joueur[1].touche[BAS] = 0;
+						break;
+
+					case SDLK_q:
+						joueur[1].touche[GAUCHE] = 0;
+						break;
+
+					case SDLK_d:
+						joueur[1].touche[DROITE] = 0;
+						break;
+				}
+				break;		
 		}
 		
+		// Déplacement des joueurs
 		
+		for(i=0; i<nbJoueurs; i++)
+		{
+			deplacerJoueur(&joueur[i]);
+		}
 		
 		// Mise à jour de l'écran
 		
 		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
-		blitterSurfaces(ecran, carte, mur, brique, bombe, persoActuel);
+		blitterSurfaces(ecran, carte, mur, brique, bombe);
+		blitterPerso(ecran, joueur, nbJoueurs);
 		SDL_Flip(ecran);
 	}
 	
@@ -104,7 +216,7 @@ int lireFichier(int carte[][NB_CASES])
 
 
 void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
-					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *persoActuel)
+					SDL_Surface *brique, SDL_Surface *bombe)
 {
 	int i = 0, j = 0;
 	SDL_Rect position;
@@ -130,10 +242,6 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 				case BOMBE:
 					SDL_BlitSurface(bombe, NULL, ecran, &position);
 					break;
-					
-				case PERSO:
-					SDL_BlitSurface(persoActuel, NULL, ecran, &position);
-					break;
 			}
 		}
 	}
@@ -142,6 +250,84 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 }
 
 
+void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs)
+{
+	int i = 0;
+	
+	for(i=0; i<nbJoueurs; i++)
+	{
+		SDL_BlitSurface(joueur[i].persoActuel, NULL, ecran, &joueur[i].position);
+	}
+	
+	return;
+}
+
+
+void afficherCarte(int carte[][NB_CASES])
+{
+	int i=0, j=0;
+	
+	for(i=0; i<NB_CASES; i++)
+	{
+		for(j=0; j<NB_CASES; j++)
+		{
+			printf("%d", carte[i][j]);
+		}
+		printf("\n");
+	}
+	
+	return;
+}
+
+
+void deplacerJoueur(Perso *joueur)
+{
+	int i=0;
+	
+	// Recherche de la touche appuyée (HAUT, BAS, GAUCHE, DROITE, ou rien)
+	while(i<4 && joueur->touche[i] == 0)
+	{
+		i++;
+	}
+	//printf("i vaut %d\n", i);
+	//printf("La touche vaut %d\n", joueur.touche[i]);
+	
+	// Déplacement du joueur si une touche a été appuyée
+	if(joueur->touche[i])
+	{
+		switch(i)
+		{
+			case HAUT:
+				joueur->position.y -= 5;
+				break;
+			case BAS:
+				joueur->position.y += 5;
+				break;
+			case GAUCHE:
+				joueur->position.x -= 5;
+				break;
+			case DROITE:
+				joueur->position.x += 5;
+				//printf("\nDeplacement du joueur\n"); 
+				break;
+		}
+	}
+	
+	return;
+}
+
+
+void initialiserTouches(Perso *joueur)
+{
+	int i = 0;
+	
+	for(i=0; i<4; i++)
+	{
+		joueur->touche[i] = 0;
+	}
+	
+	return;
+}
 
 
 
