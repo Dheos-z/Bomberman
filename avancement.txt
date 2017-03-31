@@ -1,0 +1,25 @@
+Ce fichier sert à expliquer chaque étape du jeu réalisée. Ca permet de 
+comprendre le code source et ça sera utile pour la présentation du projet
+de fin de semestre.
+
+
+
+- Pose de bombe :
+Chaque joueur a un nombre total de bombes à la base, et un nombre de bombes
+restantes (2 variables différentes).
+Pour chaque joueur, on vérifie si la touche de pose de bombe a été appuyée.
+Si oui, on vérifie si il lui reste au moins 1 bombe, on appelle la
+fonction poserBombes() et enfin on décrémente la variable bombesRestantes.
+
+- Explosion de bombe :
+Lorsque le joueur demande à poser une bombe, on inscrit l'instant auquel
+la bombe a été posée dans un tableau prévu à cet effet, grâce à 
+SDL_GetTicks(). Pour chaque bombe posée par chaque joueur, 
+on ajoute l'instant dans ce tableau (1 tableau par joueur).
+On vérifie à la fin de la boucle des événements si chaque 
+bombe posée par chaque joueur peut exploser. Pour cela on définit une
+variable tempsActuel qui vaudra toujours le temps actuel grâce à
+SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
+l'instant où la bombe a été posée vaut le délai souhaité.
+Si oui, on peut faire exploser la bombe.
+

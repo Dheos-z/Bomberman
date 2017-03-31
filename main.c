@@ -1,8 +1,7 @@
 /* 24/03/17
- * Fait : déplacement de plusieurs joueurs à la fois
+ * Fait : Pose de bombe. A faire : explosion de la bombe. Voir dans avancement.txt comme faire
  * 
  * Zak
- * TESTESTESTESTEST
  */
 
 
