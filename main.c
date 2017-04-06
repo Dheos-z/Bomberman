@@ -1,5 +1,8 @@
-/* 24/03/17
- * Fait : Pose de bombe. A faire : explosion de la bombe. Voir dans avancement.txt comme faire
+/* 06/04/17
+ * En train d'écrire verifierBombe() pour la partie explosion de la bombe.
+ * Finalement le tableau instantBombe[] doit être une liste chaînée car on
+ * veut qu'à tout instant, la prochaine bombe qui explose soit la première de
+ * la liste. A chaque fois qu'une bombe explose, on décale les instants.
  * 
  * Zak
  */

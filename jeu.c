@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "constante.h"
 #include <SDL/SDL.h>
-#include "fonction.h"
 #include "jeu.h"
 
 
@@ -15,23 +14,25 @@ int jouerPartie(SDL_Surface* ecran)
 	SDL_Surface *perso[4] = {NULL};
 	Perso joueur[4];
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2;
+	Uint32 tempsActuel = 0;
 		
 	// INITIALISATIONS DES SURFACES ET DES POSITIONS
 	
-	mur = SDL_LoadBMP("MUR.bmp");
-	brique = SDL_LoadBMP("BRIQUE.bmp");
-	bombe = SDL_LoadBMP("BOMBE.bmp");
+	mur = SDL_LoadBMP("images/MUR.bmp");
+	brique = SDL_LoadBMP("images/BRIQUE.bmp");
+	bombe = SDL_LoadBMP("images/BOMBE.bmp");
 	
-	perso[BAS] = SDL_LoadBMP("BAS.bmp");
-	perso[HAUT] = SDL_LoadBMP("HAUT.bmp");
-	perso[GAUCHE] = SDL_LoadBMP("GAUCHE.bmp");
-	perso[DROITE] = SDL_LoadBMP("DROITE.bmp");
+	perso[BAS] = SDL_LoadBMP("images/BAS.bmp");
+	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
+	perso[GAUCHE] = SDL_LoadBMP("images/GAUCHE.bmp");
+	perso[DROITE] = SDL_LoadBMP("images/DROITE.bmp");
 	
 	// Joueur 0
 	
 	joueur[0].persoActuel = perso[BAS]; // On initialise le perso vers le bas
 	joueur[0].position.x = CASE;
 	joueur[0].position.y = CASE;
+	joueur[0].bombePosee = 0;
 	joueur[0].totalBombes = 10;
 	joueur[0].bombesRestantes = joueur[0].totalBombes;
 	
@@ -40,6 +41,7 @@ int jouerPartie(SDL_Surface* ecran)
 	joueur[1].persoActuel = perso[BAS];
 	joueur[1].position.x = CASE;
 	joueur[1].position.y = 13*CASE;
+	joueur[1].bombePosee = 0;
 	joueur[1].totalBombes = 10;
 	joueur[1].bombesRestantes = joueur[1].totalBombes;
 
@@ -62,7 +64,6 @@ int jouerPartie(SDL_Surface* ecran)
 		SDL_PollEvent(&event);
 		
 		
-		
 		switch(event.type)
 		{
 			case SDL_QUIT: // Si on appuie sur la croix
@@ -79,7 +80,7 @@ int jouerPartie(SDL_Surface* ecran)
 						continuer = 0; // La touche ECHAP permet de quitter le jeu
 						break;
 
-					// TOUCHES PERSO 0
+					// TOUCHES JOUEUR 0
 					
 					case SDLK_UP:
 						joueur[0].touche[HAUT] = 1;
@@ -98,15 +99,15 @@ int jouerPartie(SDL_Surface* ecran)
 						break;
 						
 					case SDLK_RCTRL: // Poser une bombe
-						if(joueur[0].bombesRestantes)
+						if(joueur[0].bombesRestantes && !joueur[0].bombePosee)
 						{
-							poserBombe(joueur[0], carte);
-							joueur[0].bombesRestantes--;
-							afficherCarte(carte);
+							joueur[0].bombePosee = 1; 
+								// On indique qu'il est en train d'appuyer sur la touche
+							poserBombe(&joueur[0], carte);
 						}
 						break;
 						
-					// TOUCHES PERSO 1
+					// TOUCHES JOUEUR 1
 					
 					case SDLK_z:
 						joueur[1].touche[HAUT] = 1;
@@ -124,7 +125,7 @@ int jouerPartie(SDL_Surface* ecran)
 						joueur[1].touche[DROITE] = 1;
 						break;
 				}	
-				break;	
+				break;
 				
 			// RELACHEMENT D'UNE TOUCHE
 				
@@ -148,6 +149,10 @@ int jouerPartie(SDL_Surface* ecran)
 
 					case SDLK_RIGHT:
 						joueur[0].touche[DROITE] = 0;
+						break;
+						
+					case SDLK_RCTRL: // La touche de pose de bombe est relachée
+						joueur[0].bombePosee = 0;
 						break;
 						
 					// TOUCHES PERSO 1
@@ -176,6 +181,14 @@ int jouerPartie(SDL_Surface* ecran)
 		for(i=0; i<nbJoueurs; i++)
 		{
 			deplacerJoueur(&joueur[i]);
+		}
+		
+		// Vérification des bombes
+		
+		tempsActuel = SDL_GetTicks();
+		for(i=0; i<nbJoueurs; i++)
+		{
+			if(verifierBombe
 		}
 		
 		// Mise à jour de l'écran
@@ -349,16 +362,26 @@ void initialiserTouches(Perso *joueur)
 
 
 
-void poserBombe(Perso joueur, int carte[][NB_CASES])
+void poserBombe(Perso *joueur, int carte[][NB_CASES])
 {
 	Position repereBombe;
+	int bombeActuelle = joueur->totalBombes - joueur->bombesRestantes;
 	
-	repereBombe.x = (joueur.position.x + T_PERSO/2)/CASE;
-	repereBombe.y = (joueur.position.y + T_PERSO - 1)/CASE;
+	repereBombe.x = (joueur->position.x + T_PERSO/2)/CASE;
+	repereBombe.y = (joueur->position.y + T_PERSO - 1)/CASE;
 	// Indique où est-ce que la bombe doit être posée dans la carte de jeu
 	// repereBombe pile entre les 2 pieds du personnage, c'est le repère pour poser la bombe
 	
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
+	joueur->bombesRestantes--;
+	joueur->instantBombe[bombeActuelle] = SDL_GetTicks();
+		// Renvoie l'instant auquel la bombe a été posée
 	
 	return;
+}
+
+
+int verifierBombe(Perso joueur, Uint32 tempsActuel)
+{
+	
 }

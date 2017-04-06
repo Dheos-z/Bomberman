@@ -7,14 +7,21 @@ de fin de semestre.
 - Pose de bombe :
 Chaque joueur a un nombre total de bombes à la base, et un nombre de bombes
 restantes (2 variables différentes).
-Pour chaque joueur, on vérifie si la touche de pose de bombe a été appuyée.
-Si oui, on vérifie si il lui reste au moins 1 bombe, on appelle la
-fonction poserBombes() et enfin on décrémente la variable bombesRestantes.
+Pour chaque joueur, on vérifie si la touche de pose de bombe a été appuyée dans la boucle de jeu.
+Si oui, on vérifie si il lui reste au moins 1 bombe et si la touche d'appui de bombe
+n'était pas déjà appuyée à l'instant t-1 (très important ! On veut qu'il ne puisse poser
+qu'une seule bombe à la fois, même si il reste appuyé).
+Si les conditions sont vérifiées, on appelle la
+fonction poserBombes() où l'on définit la position de la bombe sur la carte (pile entre
+les 2 pieds du personnage), on décrémente la variable bombesRestantes et on définit
+l'instant auquel la bombe a été posée avec SDL_GetTicks().
+
 
 - Explosion de bombe :
-Lorsque le joueur demande à poser une bombe, on inscrit l'instant auquel
-la bombe a été posée dans un tableau prévu à cet effet, grâce à 
-SDL_GetTicks(). Pour chaque bombe posée par chaque joueur, 
+Lorsque le joueur demande à poser une bombe (appuie sur la touche adéquate), 
+on inscrit l'instant auquel la bombe a été posée dans un tableau prévu 
+à cet effet (instantBombe[] dans la structure Perso), grâce à SDL_GetTicks(). 
+Pour chaque bombe posée par chaque joueur, 
 on ajoute l'instant dans ce tableau (1 tableau par joueur).
 On vérifie à la fin de la boucle des événements si chaque 
 bombe posée par chaque joueur peut exploser. Pour cela on définit une
