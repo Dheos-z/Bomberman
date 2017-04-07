@@ -1,9 +1,8 @@
-/* 06/04/17
- * En train d'écrire verifierBombe() pour la partie explosion de la bombe.
- * Finalement le tableau instantBombe[] doit être une liste chaînée car on
- * veut qu'à tout instant, la prochaine bombe qui explose soit la première de
- * la liste. A chaque fois qu'une bombe explose, on décale les instants.
+/* 07/04/17
+ * A faire : initialisations.c et initialisations.h pour les initialisations en tout genre
  * 
+ * Ajout des instants lorsque le joueur pose une bombe
+ * Maintenant je dois vérifier si la bombe posée peut exploser dans verifierBombe()
  * Zak
  */
 

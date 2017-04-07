@@ -3,6 +3,7 @@
 #include "constante.h"
 #include <SDL/SDL.h>
 #include "jeu.h"
+#include "listes_chainees/fct_listes_chainees.h"
 
 
 
@@ -35,6 +36,7 @@ int jouerPartie(SDL_Surface* ecran)
 	joueur[0].bombePosee = 0;
 	joueur[0].totalBombes = 10;
 	joueur[0].bombesRestantes = joueur[0].totalBombes;
+	joueur[0].listeBombes = initialiserListe();
 	
 	// Joueur 1
 	
@@ -44,6 +46,7 @@ int jouerPartie(SDL_Surface* ecran)
 	joueur[1].bombePosee = 0;
 	joueur[1].totalBombes = 10;
 	joueur[1].bombesRestantes = joueur[1].totalBombes;
+	joueur[1].listeBombes = initialiserListe();
 
 	
 	for(i=0; i<4; i++)
@@ -100,6 +103,7 @@ int jouerPartie(SDL_Surface* ecran)
 						
 					case SDLK_RCTRL: // Poser une bombe
 						if(joueur[0].bombesRestantes && !joueur[0].bombePosee)
+							// Si il lui reste une bombe ET qu'il est pas déjà en train d'appuyer sur la touche
 						{
 							joueur[0].bombePosee = 1; 
 								// On indique qu'il est en train d'appuyer sur la touche
@@ -183,13 +187,15 @@ int jouerPartie(SDL_Surface* ecran)
 			deplacerJoueur(&joueur[i]);
 		}
 		
-		// Vérification des bombes
+		// Vérification des bombes EN TRAVAUX
 		
+		/*
 		tempsActuel = SDL_GetTicks();
 		for(i=0; i<nbJoueurs; i++)
 		{
 			if(verifierBombe
 		}
+		*/
 		
 		// Mise à jour de l'écran
 		
@@ -365,7 +371,7 @@ void initialiserTouches(Perso *joueur)
 void poserBombe(Perso *joueur, int carte[][NB_CASES])
 {
 	Position repereBombe;
-	int bombeActuelle = joueur->totalBombes - joueur->bombesRestantes;
+	int bombeActuelle = joueur->totalBombes - joueur->bombesRestantes, instantBombe = 0;
 	
 	repereBombe.x = (joueur->position.x + T_PERSO/2)/CASE;
 	repereBombe.y = (joueur->position.y + T_PERSO - 1)/CASE;
@@ -374,13 +380,16 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 	
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
 	joueur->bombesRestantes--;
-	joueur->instantBombe[bombeActuelle] = SDL_GetTicks();
+	
+	instantBombe = (int)SDL_GetTicks();
+	ajouterMaillonFin(joueur->listeBombes, instantBombe);
 		// Renvoie l'instant auquel la bombe a été posée
+	afficherListe(joueur->listeBombes);
 	
 	return;
 }
 
-
+// Renvoie 1 si la bombe du joueur doit exploser
 int verifierBombe(Perso joueur, Uint32 tempsActuel)
 {
 	

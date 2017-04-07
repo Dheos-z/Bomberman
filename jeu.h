@@ -1,6 +1,8 @@
 #ifndef JEU_H
 #define JEU_H
 
+#include "listes_chainees/fct_listes_chainees.h"
+
 // STRUCTURES
 
 struct Perso
@@ -12,7 +14,7 @@ struct Perso
 					// est actuellement appuyée
 	int totalBombes;
 	int bombesRestantes;
-	int instantBombe[MAX]; // Répertorie les instants aux quels chaque bombe a été posée
+	Liste *listeBombes; // Répertorie les instants auxquels chaque bombe a été posée
 };
 typedef struct Perso Perso;
 

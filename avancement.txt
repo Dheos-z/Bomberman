@@ -19,14 +19,17 @@ l'instant auquel la bombe a été posée avec SDL_GetTicks().
 
 - Explosion de bombe :
 Lorsque le joueur demande à poser une bombe (appuie sur la touche adéquate), 
-on inscrit l'instant auquel la bombe a été posée dans un tableau prévu 
-à cet effet (instantBombe[] dans la structure Perso), grâce à SDL_GetTicks(). 
+on inscrit l'instant auquel la bombe a été posée (grâce à ajouterMaillonFin() ) dans une liste chaînée prévue 
+à cet effet (Liste *instantBombes dans la structure Perso), en utilisant SDL_GetTicks(). 
 Pour chaque bombe posée par chaque joueur, 
-on ajoute l'instant dans ce tableau (1 tableau par joueur).
-On vérifie à la fin de la boucle des événements si chaque 
+on ajoute l'instant dans cette liste (1 liste par joueur).
+On vérifie à la fin de la boucle des événements si la première
 bombe posée par chaque joueur peut exploser. Pour cela on définit une
 variable tempsActuel qui vaudra toujours le temps actuel grâce à
 SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
 l'instant où la bombe a été posée vaut le délai souhaité.
-Si oui, on peut faire exploser la bombe.
+Si oui, on peut faire exploser la bombe : on efface le premier élément de listeBombes
+et on décale toutes les autres bombes de manière à ce que la prochaine bombe qui va
+exploser est désormais le premier élément de la liste (en fait supprimerMaillon() fait
+déjà tout ça).
 

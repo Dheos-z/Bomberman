@@ -4,6 +4,6 @@
 
 PRG="jeu"
 
-gcc main.c jeu.c -o $PRG -lSDL
+gcc *.c listes_chainees/fct_listes_chainees.c -o $PRG -lSDL
 
 echo "Le programme a été compilé sous le nom de $PRG"
