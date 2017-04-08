@@ -2,7 +2,10 @@
  * A faire : initialisations.c et initialisations.h pour les initialisations en tout genre
  * 
  * Ajout de verifierBombe().
- * A faire : exploserBombe()
+ * A faire : 
+ * - exploserBombe()
+ * - Supprimer les fichiers indésirables du répertoire git (*.bmp etc) avec git rm 
+ * 
  * Zak
  */
 
