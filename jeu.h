@@ -1,15 +1,22 @@
 #ifndef JEU_H
 #define JEU_H
 
-#include "listes_chainees/fct_listes_chainees.h"
-
 // STRUCTURES
+
+struct Position
+{
+	int x;
+	int y;
+};
+typedef struct Position Position;
+
+#include "listes_chainees/bomberman_fct_listes_ch.h"
 
 struct Perso
 {
 	SDL_Surface *persoActuel;
 	SDL_Rect position;
-	int touche[4];
+	int touche[4]; // Tableau de booléennes qui indiquent si la touche correspondante est appuyée
 	int bombePosee; // Booléenne qui indique si la touche de pose de bombe
 					// est actuellement appuyée
 	int totalBombes;
@@ -18,12 +25,6 @@ struct Perso
 };
 typedef struct Perso Perso;
 
-struct Position
-{
-	int x;
-	int y;
-};
-typedef struct Position Position;
 
 // FONCTIONS
 

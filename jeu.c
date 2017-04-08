@@ -3,7 +3,7 @@
 #include "constante.h"
 #include <SDL/SDL.h>
 #include "jeu.h"
-#include "listes_chainees/fct_listes_chainees.h"
+#include "listes_chainees/bomberman_fct_listes_ch.h"
 
 
 
@@ -187,13 +187,15 @@ int jouerPartie(SDL_Surface* ecran)
 			deplacerJoueur(&joueur[i]);
 		}
 		
-		// Vérification des bombes EN TRAVAUX
+		// Vérification des bombes
 		
 		/*
-		tempsActuel = SDL_GetTicks();
 		for(i=0; i<nbJoueurs; i++)
 		{
-			if(verifierBombe
+			if(verifierBombe(joueur[i]))
+			{
+				printf("BOUM!\n");
+			}
 		}
 		*/
 		
@@ -326,8 +328,6 @@ void deplacerJoueur(Perso *joueur)
 	{
 		i++;
 	}
-	//printf("i vaut %d\n", i);
-	//printf("La touche vaut %d\n", joueur.touche[i]);
 	
 	// Déplacement du joueur si une touche a été appuyée
 	if(joueur->touche[i])
@@ -345,7 +345,6 @@ void deplacerJoueur(Perso *joueur)
 				break;
 			case DROITE:
 				joueur->position.x += 5;
-				//printf("\nDeplacement du joueur\n"); 
 				break;
 		}
 	}
@@ -379,18 +378,40 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 	// repereBombe pile entre les 2 pieds du personnage, c'est le repère pour poser la bombe
 	
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
-	joueur->bombesRestantes--;
 	
 	instantBombe = (int)SDL_GetTicks();
-	ajouterMaillonFin(joueur->listeBombes, instantBombe);
-		// Renvoie l'instant auquel la bombe a été posée
-	afficherListe(joueur->listeBombes);
+	ajouterBombeFin(joueur->listeBombes, instantBombe, repereBombe.x, repereBombe.y);
+		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
+	joueur->bombesRestantes--;
+	
+	// Affichage pour voir si tout fonctionne 
+	
+	afficherCarte(carte);
+	afficherListe(joueur->listeBombes); // Test pr voir si ça marche (à supp)
+	printf("\nBombes restantes : %d\n", joueur->bombesRestantes);
 	
 	return;
 }
 
 // Renvoie 1 si la bombe du joueur doit exploser
-int verifierBombe(Perso joueur, Uint32 tempsActuel)
+int verifierBombe(Perso joueur)
 {
+	int instantActuel = (int)SDL_GetTicks(), instantBombe = 0;
 	
+	if(joueur.listeBombes->premier != NULL) // Si le joueur a posé au moins une bombe
+	{
+		instantBombe = joueur.listeBombes->premier->instant;
+		if(instantActuel-instantBombe >= DELAI_BOMBE)
+		{
+			return 1;
+		}
+	}
+	
+	return 0;
 }
+
+/*
+void exploserBombe(int carte[][NB_CASES], Perso *joueur)
+{
+}
+*/

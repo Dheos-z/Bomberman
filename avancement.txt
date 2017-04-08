@@ -4,7 +4,7 @@ de fin de semestre.
 
 
 
-- Pose de bombe :
+* Pose de bombe :
 Chaque joueur a un nombre total de bombes à la base, et un nombre de bombes
 restantes (2 variables différentes).
 Pour chaque joueur, on vérifie si la touche de pose de bombe a été appuyée dans la boucle de jeu.
@@ -12,24 +12,24 @@ Si oui, on vérifie si il lui reste au moins 1 bombe et si la touche d'appui de 
 n'était pas déjà appuyée à l'instant t-1 (très important ! On veut qu'il ne puisse poser
 qu'une seule bombe à la fois, même si il reste appuyé).
 Si les conditions sont vérifiées, on appelle la
-fonction poserBombes() où l'on définit la position de la bombe sur la carte (pile entre
-les 2 pieds du personnage), on décrémente la variable bombesRestantes et on définit
-l'instant auquel la bombe a été posée avec SDL_GetTicks().
+fonction poserBombes() :
+- Ajout de la bombe sur la carte (pile entre les 2 pieds du personnage) grâce à ses positions
+- Décrémentation de la variable bombesRestantes
+- Ajout d'une bombe à la fin de listeBombes avec ajouterBombeFin() :
+	- Ajout de l'instant auquel la bombe a été posée avec SDL_GetTicks()
+	- Ajout des positions de la bombe sur la carte (utile quand on voudra la faire exploser)
+	- Incrémentation de la taille de listeBombes
 
 
-- Explosion de bombe :
-Lorsque le joueur demande à poser une bombe (appuie sur la touche adéquate), 
-on inscrit l'instant auquel la bombe a été posée (grâce à ajouterMaillonFin() ) dans une liste chaînée prévue 
-à cet effet (Liste *instantBombes dans la structure Perso), en utilisant SDL_GetTicks(). 
-Pour chaque bombe posée par chaque joueur, 
-on ajoute l'instant dans cette liste (1 liste par joueur).
+* Explosion de bombe :
 On vérifie à la fin de la boucle des événements si la première
-bombe posée par chaque joueur peut exploser. Pour cela on définit une
-variable tempsActuel qui vaudra toujours le temps actuel grâce à
+bombe posée par chaque joueur peut exploser, dans verifierBombe() :
+- On définit une variable tempsActuel qui vaudra l'instant actuel grâce à
 SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
-l'instant où la bombe a été posée vaut le délai souhaité.
-Si oui, on peut faire exploser la bombe : on efface le premier élément de listeBombes
-et on décale toutes les autres bombes de manière à ce que la prochaine bombe qui va
-exploser est désormais le premier élément de la liste (en fait supprimerMaillon() fait
-déjà tout ça).
+l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
+- Si oui, on peut faire exploser la bombe :
+	- Effacement de la bombe de la carte grâce à ses positions
+	- Effacement du premier élément de listeBombes grâce à supprimerBombe()
+	- Décrémentation de listeBombe->taille
+	- Incrémentation de bombesRestantes
 

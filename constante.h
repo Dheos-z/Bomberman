@@ -31,8 +31,6 @@ typedef struct Objet Objet;
 #define PERSO 3
 #define BOMBE 4
 
-#define MAX 100
-
 // DIRECTIONS
 
 #define HAUT 0
@@ -40,7 +38,11 @@ typedef struct Objet Objet;
 #define DROITE 2
 #define GAUCHE 3
 
+// AUTRES
 
+#define VITESSE 5
+#define MAX 100
+#define DELAI_BOMBE 3000 // En millisecondes
 
 
 #endif 

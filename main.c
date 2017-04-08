@@ -1,8 +1,8 @@
-/* 07/04/17
+/* 08/04/17
  * A faire : initialisations.c et initialisations.h pour les initialisations en tout genre
  * 
- * Ajout des instants lorsque le joueur pose une bombe
- * Maintenant je dois vérifier si la bombe posée peut exploser dans verifierBombe()
+ * Ajout de verifierBombe().
+ * A faire : exploserBombe()
  * Zak
  */
 
