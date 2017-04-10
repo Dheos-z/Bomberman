@@ -12,7 +12,7 @@ Si oui, on vérifie si il lui reste au moins 1 bombe et si la touche d'appui de 
 n'était pas déjà appuyée à l'instant t-1 (très important ! On veut qu'il ne puisse poser
 qu'une seule bombe à la fois, même si il reste appuyé).
 Si les conditions sont vérifiées, on appelle la
-fonction poserBombes() :
+fonction poserBombe() :
 - Ajout de la bombe sur la carte (pile entre les 2 pieds du personnage) grâce à ses positions
 - Décrémentation de la variable bombesRestantes
 - Ajout d'une bombe à la fin de listeBombes avec ajouterBombeFin() :
@@ -27,9 +27,9 @@ bombe posée par chaque joueur peut exploser, dans verifierBombe() :
 - On définit une variable tempsActuel qui vaudra l'instant actuel grâce à
 SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
 l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
-- Si oui, on peut faire exploser la bombe :
+- Si oui, on peut faire exploser la bombe dans exploserBombe() :
 	- Effacement de la bombe de la carte grâce à ses positions
-	- Effacement du premier élément de listeBombes grâce à supprimerBombe()
-	- Décrémentation de listeBombe->taille
+	- Effacement du premier élément de listeBombes grâce à supprimerBombe() :
+		- Décrémentation de listeBombe->taille
 	- Incrémentation de bombesRestantes
 

@@ -14,7 +14,7 @@ typedef struct Position Position;
 
 struct Perso
 {
-	SDL_Surface *persoActuel;
+	SDL_Surface *persoActuel; // Le skin du perso selon la direction dans laquelle il va
 	SDL_Rect position;
 	int touche[4]; // Tableau de booléennes qui indiquent si la touche correspondante est appuyée
 	int bombePosee; // Booléenne qui indique si la touche de pose de bombe
@@ -29,12 +29,11 @@ typedef struct Perso Perso;
 // FONCTIONS
 
 int jouerPartie(SDL_Surface* ecran);
-int lireFichier(int carte[][NB_CASES]);
 void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, SDL_Surface *brique, SDL_Surface *bombe);
 void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur);
-void initialiserTouches(Perso *joueur);
 void poserBombe(Perso *joueur, int carte[][NB_CASES]);
+void exploserBombe(int carte[][NB_CASES], Perso *joueur);
 
 #endif

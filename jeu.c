@@ -17,36 +17,13 @@ int jouerPartie(SDL_Surface* ecran)
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2;
 	Uint32 tempsActuel = 0;
 		
-	// INITIALISATIONS DES SURFACES ET DES POSITIONS
+	// INITIALISATIONS
 	
-	mur = SDL_LoadBMP("images/MUR.bmp");
-	brique = SDL_LoadBMP("images/BRIQUE.bmp");
-	bombe = SDL_LoadBMP("images/BOMBE.bmp");
+	initSurfaces(&mur, &brique, &bombe, perso);
 	
-	perso[BAS] = SDL_LoadBMP("images/BAS.bmp");
-	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
-	perso[GAUCHE] = SDL_LoadBMP("images/GAUCHE.bmp");
-	perso[DROITE] = SDL_LoadBMP("images/DROITE.bmp");
-	
-	// Joueur 0
-	
-	joueur[0].persoActuel = perso[BAS]; // On initialise le perso vers le bas
-	joueur[0].position.x = CASE;
-	joueur[0].position.y = CASE;
-	joueur[0].bombePosee = 0;
-	joueur[0].totalBombes = 10;
-	joueur[0].bombesRestantes = joueur[0].totalBombes;
-	joueur[0].listeBombes = initialiserListe();
-	
-	// Joueur 1
-	
-	joueur[1].persoActuel = perso[BAS];
-	joueur[1].position.x = CASE;
-	joueur[1].position.y = 13*CASE;
-	joueur[1].bombePosee = 0;
-	joueur[1].totalBombes = 10;
-	joueur[1].bombesRestantes = joueur[1].totalBombes;
-	joueur[1].listeBombes = initialiserListe();
+		// Modèle : void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
+	initJoueur(&joueur[0], perso[BAS], CASE, CASE);
+	initJoueur(&joueur[1], perso[BAS], CASE, 13*CASE);
 
 	
 	for(i=0; i<4; i++)
@@ -54,13 +31,11 @@ int jouerPartie(SDL_Surface* ecran)
 		initialiserTouches(&joueur[i]);
 	}
 	
-	// Lecture du niveau
-	
+		// Lecture du niveau
 	lireFichier(carte);
-	afficherCarte(carte);
 	
 	
-	// Boucle des événements
+	// BOUCLE DES EVENEMENTS
 	
 	while(continuer)
 	{
@@ -189,15 +164,16 @@ int jouerPartie(SDL_Surface* ecran)
 		
 		// Vérification des bombes
 		
-		/*
+		
 		for(i=0; i<nbJoueurs; i++)
 		{
 			if(verifierBombe(joueur[i]))
 			{
 				printf("BOUM!\n");
+				exploserBombe(carte, &joueur[i]);
 			}
 		}
-		*/
+		
 		
 		// Mise à jour de l'écran
 		
@@ -220,37 +196,6 @@ int jouerPartie(SDL_Surface* ecran)
 	
 	
 	return 0; // Pour l'instant
-}
-
-
-
-
-
-int lireFichier(int carte[][NB_CASES])
-{
-	FILE *fichier = NULL;
-	int i = 0, j = 0;
-	
-	fichier = fopen("carte.txt", "r"); // Ouverture du fichier représentant la carte en mode lecture seule
-	
-	if(fichier == NULL)
-	{
-		return 1; // Erreur lors de l'ouverture du fichier		
-	}
-	
-	for(i = 0; i < NB_CASES; i++)
-	{
-		for(j = 0; j < NB_CASES; j++)
-		{
-			carte[i][j] = fgetc(fichier) - '0'; /* Remplissage des valeurs de la carte. 
-												On retire '0' pour passer du char (lu dans le fichier) au int */
-		}
-		fgetc(fichier); // Pour lire le \n à la fin de chaque ligne
-	}
-	
-	fclose(fichier); // La base
-	
-	return 0;
 }
 
 
@@ -353,19 +298,6 @@ void deplacerJoueur(Perso *joueur)
 }
 
 
-void initialiserTouches(Perso *joueur)
-{
-	int i = 0;
-	
-	for(i=0; i<4; i++)
-	{
-		joueur->touche[i] = 0;
-	}
-	
-	return;
-}
-
-
 
 void poserBombe(Perso *joueur, int carte[][NB_CASES])
 {
@@ -384,7 +316,7 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
 	
-	// Affichage pour voir si tout fonctionne 
+	// Affichage pour voir si tout fonctionne
 	
 	afficherCarte(carte);
 	afficherListe(joueur->listeBombes); // Test pr voir si ça marche (à supp)
@@ -410,8 +342,20 @@ int verifierBombe(Perso joueur)
 	return 0;
 }
 
-/*
+
 void exploserBombe(int carte[][NB_CASES], Perso *joueur)
 {
+	Position posBombe;
+	
+	posBombe.x = joueur->listeBombes->premier->position.x;
+	posBombe.y = joueur->listeBombes->premier->position.y;
+		// Pour simplifier la lecture du code
+		
+	carte[posBombe.y][posBombe.x] = VIDE;
+	supprimerBombe(joueur->listeBombes, 0);
+		// Supprime la 1ere bombe de la liste, celle qui doit exploser
+	joueur->bombesRestantes++;
+	
+	return;
 }
-*/
+
