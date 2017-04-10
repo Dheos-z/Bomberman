@@ -1,8 +1,10 @@
-/* 08/04/17
- * A faire : initialisations.c et initialisations.h pour les initialisations en tout genre
+/* 10/04/17
  * 
- * Ajout de verifierBombe().
- * A faire : exploserBombe()
+ * Ajout de exploserBombe()
+ * A faire : 
+ * - Supprimer les fichiers indésirables du répertoire git (*.bmp etc) avec git rm 
+ * - Animation de la bombe qui explose (trouver des images de flammes)
+ * 
  * Zak
  */
 

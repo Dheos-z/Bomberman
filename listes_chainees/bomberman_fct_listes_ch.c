@@ -122,7 +122,7 @@ void ajouterMaillonMilieu(Liste *liste, int nombre, int indice)
 }
 
 
-void supprimerBombe(Liste *liste, int rang)
+int supprimerBombe(Liste *liste, int rang)
 {
 	int i = 0;
 	Maillon *precedentFinal = liste->premier, *suivantFinal = NULL, *maillonAsupprimer = NULL;
@@ -154,7 +154,9 @@ void supprimerBombe(Liste *liste, int rang)
 			free(maillonAsupprimer);
 		}
 		liste->taille--;
+		
+		return 0;
 	}
 	
-	return;
+	return 1;
 }

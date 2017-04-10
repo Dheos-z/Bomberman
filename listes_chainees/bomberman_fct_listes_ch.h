@@ -22,6 +22,6 @@ void afficherListe(Liste *liste);
 void ajouterBombeFin(Liste *liste, int instantBombe, int posX, int posY);
 void ajouterMaillonDebut(Liste *liste, int nombre);
 void ajouterMaillonMilieu(Liste *liste, int nombre, int indice);
-void supprimerBombe(Liste *liste, int rang);
+int supprimerBombe(Liste *liste, int rang);
 
 #endif
