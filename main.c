@@ -1,9 +1,10 @@
-/* 10/04/17
+/* 12/04/17
  * 
- * Ajout de exploserBombe()
+ * Suppression des fichiers indésirables (si le commit a fonctionné)
+ * Ajout de flamme.bmp
+ * 
  * A faire : 
- * - Supprimer les fichiers indésirables du répertoire git (*.bmp etc) avec git rm 
- * - Animation de la bombe qui explose (trouver des images de flammes)
+ * - Animation de la bombe qui explose
  * 
  * Zak
  */

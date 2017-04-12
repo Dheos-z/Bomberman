@@ -11,7 +11,7 @@
 int jouerPartie(SDL_Surface* ecran)
 {
 	SDL_Event event;
-	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL;
+	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL, *flamme = NULL;
 	SDL_Surface *perso[4] = {NULL};
 	Perso joueur[4];
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2;
@@ -33,7 +33,6 @@ int jouerPartie(SDL_Surface* ecran)
 	
 		// Lecture du niveau
 	lireFichier(carte);
-	
 	
 	// BOUCLE DES EVENEMENTS
 	
@@ -175,7 +174,7 @@ int jouerPartie(SDL_Surface* ecran)
 		}
 		
 		
-		// Mise à jour de l'écran
+		// Mise à jour de l'écran, collage des surfaces
 		
 		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
 		blitterSurfaces(ecran, carte, mur, brique, bombe);
