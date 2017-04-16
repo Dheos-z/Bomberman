@@ -16,10 +16,12 @@ int jouerPartie(SDL_Surface* ecran)
 	Perso joueur[4];
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2;
 	Uint32 tempsActuel = 0;
+	Liste *bombesExplosees = initialiserListe();
+	Maillon *aSupp = NULL;
 		
 	// INITIALISATIONS
 	
-	initSurfaces(&mur, &brique, &bombe, perso);
+	initSurfaces(&mur, &brique, &bombe, &flamme, perso);
 	
 		// Modèle : void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	initJoueur(&joueur[0], perso[BAS], CASE, CASE);
@@ -161,23 +163,32 @@ int jouerPartie(SDL_Surface* ecran)
 			deplacerJoueur(&joueur[i]);
 		}
 		
-		// Vérification des bombes
+		// Traitement des bombes
 		
 		
 		for(i=0; i<nbJoueurs; i++)
 		{
-			if(verifierBombe(joueur[i]))
+			if(verifierDelai(joueur[i].listeBombes, DELAI_BOMBE))
 			{
 				printf("BOUM!\n");
-				exploserBombe(carte, &joueur[i]);
+				exploserBombe(carte, &joueur[i], bombesExplosees);
+				
+				aSupp = recupererElement(bombesExplosees, bombesExplosees->taille-1);
+				printf("\n>Portée de la bombe :\n");
+				for(i=0; i<4; i++)
+				{
+					printf("%d\n", aSupp->portee[i]);
+				}
 			}
 		}
+		
+		
 		
 		
 		// Mise à jour de l'écran, collage des surfaces
 		
 		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
-		blitterSurfaces(ecran, carte, mur, brique, bombe);
+		blitterSurfaces(ecran, carte, mur, brique, bombe, flamme);
 		blitterPerso(ecran, joueur, nbJoueurs);
 		SDL_Flip(ecran);
 	}
@@ -187,6 +198,7 @@ int jouerPartie(SDL_Surface* ecran)
 	SDL_FreeSurface(mur);
 	SDL_FreeSurface(brique);
 	SDL_FreeSurface(bombe);
+	SDL_FreeSurface(flamme);
 	for(i = 0; i < 4; i++)
 	{
 		SDL_FreeSurface(perso[i]);
@@ -199,7 +211,7 @@ int jouerPartie(SDL_Surface* ecran)
 
 
 void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
-					SDL_Surface *brique, SDL_Surface *bombe)
+					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme)
 {
 	int i = 0, j = 0;
 	SDL_Rect position;
@@ -225,6 +237,8 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 				case BOMBE:
 					SDL_BlitSurface(bombe, NULL, ecran, &position);
 					break;
+				case FLAMME:
+					SDL_BlitSurface(flamme, NULL, ecran, &position);
 			}
 		}
 	}
@@ -279,16 +293,16 @@ void deplacerJoueur(Perso *joueur)
 		switch(i)
 		{
 			case HAUT:
-				joueur->position.y -= 5;
+				joueur->position.y -= VITESSE;
 				break;
 			case BAS:
-				joueur->position.y += 5;
+				joueur->position.y += VITESSE;
 				break;
 			case GAUCHE:
-				joueur->position.x -= 5;
+				joueur->position.x -= VITESSE;
 				break;
 			case DROITE:
-				joueur->position.x += 5;
+				joueur->position.x += VITESSE;
 				break;
 		}
 	}
@@ -311,7 +325,7 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
 	
 	instantBombe = (int)SDL_GetTicks();
-	ajouterBombeFin(joueur->listeBombes, instantBombe, repereBombe.x, repereBombe.y);
+	ajouterBombeFin(joueur->listeBombes, instantBombe, repereBombe, NULL);
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
 	
@@ -324,15 +338,15 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 	return;
 }
 
-// Renvoie 1 si la bombe du joueur doit exploser
-int verifierBombe(Perso joueur)
+// Renvoie 1 si le délai est passé
+int verifierDelai(Liste *liste, int delai)
 {
-	int instantActuel = (int)SDL_GetTicks(), instantBombe = 0;
+	int instantActuel = (int)SDL_GetTicks(), instantInitial = 0;
 	
-	if(joueur.listeBombes->premier != NULL) // Si le joueur a posé au moins une bombe
+	if(liste->premier != NULL) // Si il y a au moins 1 élément
 	{
-		instantBombe = joueur.listeBombes->premier->instant;
-		if(instantActuel-instantBombe >= DELAI_BOMBE)
+		instantInitial = liste->premier->instant;
+		if(instantActuel-instantInitial >= delai)
 		{
 			return 1;
 		}
@@ -342,15 +356,24 @@ int verifierBombe(Perso joueur)
 }
 
 
-void exploserBombe(int carte[][NB_CASES], Perso *joueur)
+void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees)
 {
 	Position posBombe;
+	int portee[4] = {0}, instantBombe = 0;
 	
 	posBombe.x = joueur->listeBombes->premier->position.x;
 	posBombe.y = joueur->listeBombes->premier->position.y;
+	instantBombe = joueur->listeBombes->premier->instant;
 		// Pour simplifier la lecture du code
 		
-	carte[posBombe.y][posBombe.x] = VIDE;
+	carte[posBombe.y][posBombe.x] = FLAMME; // A mettre dans afficherExplosion() !!
+	
+	determinerPortee(carte, joueur->puissanceBombe, posBombe, portee);
+	
+	ajouterBombeFin(bombesExplosees, instantBombe, posBombe, portee);
+		/* On ajoute une bombe explosée pour ensuite traiter le délai de
+			présence des flammes sur la carte */
+	
 	supprimerBombe(joueur->listeBombes, 0);
 		// Supprime la 1ere bombe de la liste, celle qui doit exploser
 	joueur->bombesRestantes++;
@@ -358,3 +381,61 @@ void exploserBombe(int carte[][NB_CASES], Perso *joueur)
 	return;
 }
 
+
+void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[])
+{
+	int i = 0;
+	
+	// INITIALISATION (on sait jamais)
+	
+	for(i=0; i<4; i++)
+	{
+		portee[i] = 0;
+	}
+	
+	printf("\nPosBombe : x = %d, y = %d\n", posBombe.x, posBombe.y);
+	
+	// DETERMINATION PORTEE
+	
+	for(i=1; i<=puissanceBombe; i++)
+	{
+		// EN HAUT
+		if(posBombe.y >= i && (carte[posBombe.y - i][posBombe.x] == VIDE ||
+								carte[posBombe.y - i][posBombe.x] == FLAMME))
+		{
+			portee[HAUT]++;
+		}
+		
+		// EN BAS
+		if(posBombe.y + i <= NB_CASES-1 && (carte[posBombe.y + i][posBombe.x] == VIDE ||
+											carte[posBombe.y + i][posBombe.x] == FLAMME))
+		{
+			portee[BAS]++;
+		}
+		
+		
+		// A GAUCHE
+		if(posBombe.x >= i && (carte[posBombe.y][posBombe.x - i] == VIDE ||
+								carte[posBombe.y][posBombe.x - i] == FLAMME))
+		{
+			portee[GAUCHE]++;
+		}
+		
+		// A DROITE
+		if(posBombe.x + i <= NB_CASES-1 && (carte[posBombe.y][posBombe.x + i] == VIDE ||
+											carte[posBombe.y][posBombe.x + i] == FLAMME))
+		{
+			portee[DROITE]++;
+		}
+	}
+	
+	return;
+}
+
+
+/*void afficherExplosion(int carte[][NB_CASES], Maillon bombe)
+{
+	int i = 0;
+	
+	for
+}*/

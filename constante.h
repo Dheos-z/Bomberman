@@ -30,19 +30,21 @@ typedef struct Objet Objet;
 #define BRIQUE 2
 #define PERSO 3
 #define BOMBE 4
+#define FLAMME 5
 
 // DIRECTIONS
 
 #define HAUT 0
 #define BAS 1
-#define DROITE 2
-#define GAUCHE 3
+#define GAUCHE 2
+#define DROITE 3
 
 // AUTRES
 
 #define VITESSE 5
 #define MAX 100
 #define DELAI_BOMBE 3000 // En millisecondes
+#define DELAI_FLAMMES 1000
 
 
 #endif 

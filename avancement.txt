@@ -2,6 +2,14 @@ Ce fichier sert à expliquer chaque étape du jeu réalisée. Ca permet de
 comprendre le code source et ça sera utile pour la présentation du projet
 de fin de semestre.
 
+* Affichage de la carte :
+Le niveau est écrit dans carte.txt, chaque chiffre correspond à un élément de
+la carte. Dans lireFichier(), on lit chaque chiffre et on
+remplit la carte 2D qui nous sera utile dans tout le programme.
+Dans la carte peuvent se trouver uniquement : murs, briques, vide, items
+(flamme+, bombe+, roller etc...), flammes causées par les bombes. 
+Les personnages ne sont pas présents dans la carte, 
+on préfère repérer leurs positions en pixels en créant des variables SDL_Rect.
 
 
 * Pose de bombe :
@@ -29,7 +37,43 @@ SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
 l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
 - Si oui, on peut faire exploser la bombe dans exploserBombe() :
 	- Effacement de la bombe de la carte grâce à ses positions
-	- Effacement du premier élément de listeBombes grâce à supprimerBombe() :
+	- Effacement du premier élément de listeBombes
+	  grâce à supprimerBombe() :
 		- Décrémentation de listeBombe->taille
 	- Incrémentation de bombesRestantes
+	- Ajout d'une bombe explosée dans la liste bombesExplosées
+	  afin de traiter plus tard le délai de présence des flammes sur
+	  sur la carte
+
+
+* Affichage de l'explosion :
+
+D'abord on doit définir sa portée dans les 4 directions.
+Ca va se faire dans une boucle qui suit à peu près ce schéma :
+
+for(i=1; i<=puissanceBombe; i++)
+{
+	if(caseDeGauche.x >= 0 && caseDeGauche = VIDE ou FLAMME)
+	{
+		portee[GAUCHE]++; // Pour la portée de la bombe à gauche
+	}
+	// Pareil pour les 3 autres directions
+}
+
+A partir de là, on a la portée de la bombe dans les 4 directions, 
+regroupée dans un tableau portee. On part de la position de cette
+bombe et on inscrit dans la carte 2D des flammes dans les 4 directions
+de cette bombe selon la portée. 
+Cela se fera dans afficherExplosion().
+L'explosion est graphiquement représentée.
+Reste à déterminer l'instant où il faut retirer ces flammes et retrouver 
+du vide.
+
+Pour l'affichage de l'explosion, c'est une question 
+de délai (l'explosion doit être visible pendant DELAI_FLAMME millisecondes).
+A chaque fois qu'une bombe explose, on enregistre : l'instant quand elle a
+explosé, sa position sur la carte et sa portée dans une liste chaînée
+de bombes qui ont explosé. 
+Dans la boucle principale de jeu, on vérifie pour l'ensemble de cette liste
+si le délai est respecté. Si oui, on 
 

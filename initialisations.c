@@ -4,11 +4,12 @@
 #include "jeu.h"
 #include "initialisations.h"
 
-void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **perso)
+void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **flamme, SDL_Surface **perso)
 {
 	*mur = SDL_LoadBMP("images/MUR.bmp");
 	*brique = SDL_LoadBMP("images/BRIQUE.bmp");
 	*bombe = SDL_LoadBMP("images/BOMBE.bmp");
+	*flamme = SDL_LoadBMP("images/flamme.bmp");
 	
 	perso[BAS] = SDL_LoadBMP("images/BAS.bmp");
 	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
@@ -29,6 +30,7 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	joueur->bombePosee = 0;
 	joueur->totalBombes = 10;
 	joueur->bombesRestantes = joueur[0].totalBombes;
+	joueur->puissanceBombe = 3;
 	joueur->listeBombes = initialiserListe();
 	
 	return;

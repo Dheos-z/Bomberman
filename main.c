@@ -1,7 +1,8 @@
 /* 12/04/17
  * 
- * Suppression des fichiers indésirables (si le commit a fonctionné)
- * Ajout de flamme.bmp
+ * Fait : 
+ * Détermination de la portée d'une bombe qui explose
+ * Problème qui persiste : portée de 1 au lieu de 0 pour une bombe collée à un mur
  * 
  * A faire : 
  * - Animation de la bombe qui explose

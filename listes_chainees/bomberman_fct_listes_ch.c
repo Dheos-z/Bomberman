@@ -49,9 +49,10 @@ void afficherListe(Liste *liste)
 
 
 // Ajouter une bombe à la fin de la liste
-void ajouterBombeFin(Liste *liste, int instantBombe, int posX, int posY)
+void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int porteeBombe[])
 {
 	Maillon *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Maillon));
+	int i = 0;
 
 	if(!liste->taille) // Si la liste est vide
 	{
@@ -69,10 +70,18 @@ void ajouterBombeFin(Liste *liste, int instantBombe, int posX, int posY)
 	}
 	
 	nouveau->instant = instantBombe;
-	nouveau->position.x = posX;
-	nouveau->position.y = posY;
+	nouveau->position.x = posBombe.x;
+	nouveau->position.y = posBombe.y;
 	nouveau->suivant = NULL;
 	liste->taille++;
+	
+	if(porteeBombe != NULL) // Si on a décidé de mettre en argument le tableau pour ajouter la portée de la bombe
+	{
+		for(i=0; i<4; i++)
+		{
+			nouveau->portee[i] = porteeBombe[i];
+		}
+	}
 
 	return;
 }
@@ -159,4 +168,25 @@ int supprimerBombe(Liste *liste, int rang)
 	}
 	
 	return 1;
+}
+
+
+Maillon *recupererElement(Liste *liste, int rang)
+{
+	int i = 0;
+	Maillon *courant = liste->premier;
+	
+	if(courant == NULL || rang <= 0 || rang >= liste->taille)
+	{
+		printf("Erreur : la liste ne contient élément ou le rang est négatif/nul/superieur a la taille de la liste\n");
+	}
+	else
+	{
+		for(i=0; i<rang; i++)
+		{
+			courant = courant->suivant;
+		}
+	}
+	
+	return courant;
 }

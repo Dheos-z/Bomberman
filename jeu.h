@@ -21,6 +21,7 @@ struct Perso
 					// est actuellement appuyée
 	int totalBombes;
 	int bombesRestantes;
+	int puissanceBombe;
 	Liste *listeBombes; // Répertorie les instants auxquels chaque bombe a été posée
 };
 typedef struct Perso Perso;
@@ -29,11 +30,13 @@ typedef struct Perso Perso;
 // FONCTIONS
 
 int jouerPartie(SDL_Surface* ecran);
-void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, SDL_Surface *brique, SDL_Surface *bombe);
+void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme);
 void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur);
 void poserBombe(Perso *joueur, int carte[][NB_CASES]);
-void exploserBombe(int carte[][NB_CASES], Perso *joueur);
+int verifierDelai(Liste *liste, int delai);
+void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees);
+void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[]);
 
 #endif
