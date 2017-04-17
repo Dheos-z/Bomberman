@@ -35,8 +35,9 @@ void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur);
 void poserBombe(Perso *joueur, int carte[][NB_CASES]);
-int verifierDelai(Liste *liste, int delai);
+int verifierDelai(int instant, int delai);
 void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees);
 void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[]);
+void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
 
 #endif

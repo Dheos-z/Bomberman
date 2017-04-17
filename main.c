@@ -1,11 +1,12 @@
-/* 12/04/17
+/* 17/04/17
  * 
  * Fait : 
- * Détermination de la portée d'une bombe qui explose
- * Problème qui persiste : portée de 1 au lieu de 0 pour une bombe collée à un mur
+ * Animation de la bombe qui explose
  * 
  * A faire : 
- * - Animation de la bombe qui explose
+ * - Effets de l'explosion : si du feu touche une bombe ça la fait exploser,
+ * si du feu touche une brique ça la casse, si ça touche un joueur le perso meurt, si ça touche
+ * un item ça le brûle
  * 
  * Zak
  */

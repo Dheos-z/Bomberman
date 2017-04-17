@@ -41,24 +41,29 @@ l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
 	  grâce à supprimerBombe() :
 		- Décrémentation de listeBombe->taille
 	- Incrémentation de bombesRestantes
+	- Détermination de la portée de la bombe dans determinerPortee()
 	- Ajout d'une bombe explosée dans la liste bombesExplosées
 	  afin de traiter plus tard le délai de présence des flammes sur
 	  sur la carte
-
+	- Affichage de l'explosion dans afficherExplosion() 
 
 * Affichage de l'explosion :
 
 D'abord on doit définir sa portée dans les 4 directions.
-Ca va se faire dans une boucle qui suit à peu près ce schéma :
+Ca va se faire dans determinerPortee() :
 
 for(i=1; i<=puissanceBombe; i++)
 {
-	if(caseDeGauche.x >= 0 && caseDeGauche = VIDE ou FLAMME)
-	{
-		portee[GAUCHE]++; // Pour la portée de la bombe à gauche
-	}
+	// HAUT :
+	if(posB.y >= i && carte[posB.y - i][posB.x] == VIDE ou FLAMME
+		       && bool[HAUT])
+		portee[HAUT]++;
+	else
+		bool[HAUT] = 0;
+
 	// Pareil pour les 3 autres directions
 }
+
 
 A partir de là, on a la portée de la bombe dans les 4 directions, 
 regroupée dans un tableau portee. On part de la position de cette

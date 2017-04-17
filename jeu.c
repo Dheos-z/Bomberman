@@ -156,36 +156,39 @@ int jouerPartie(SDL_Surface* ecran)
 				break;		
 		}
 		
-		// Déplacement des joueurs
+		// DEPLACEMENT DES JOUEURS
 		
 		for(i=0; i<nbJoueurs; i++)
 		{
 			deplacerJoueur(&joueur[i]);
 		}
 		
-		// Traitement des bombes
+		// TRAITEMENT DES BOMBES
 		
+		// Vérification des bombes qui attendent d'exploser
 		
 		for(i=0; i<nbJoueurs; i++)
 		{
-			if(verifierDelai(joueur[i].listeBombes, DELAI_BOMBE))
+			if(joueur[i].listeBombes->taille && verifierDelai(joueur[i].listeBombes->premier->instant, DELAI_BOMBE))
+				// On vérifie la première bombe de la liste des bombes du joueur
 			{
-				printf("BOUM!\n");
 				exploserBombe(carte, &joueur[i], bombesExplosees);
-				
-				aSupp = recupererElement(bombesExplosees, bombesExplosees->taille-1);
-				printf("\n>Portée de la bombe :\n");
-				for(i=0; i<4; i++)
-				{
-					printf("%d\n", aSupp->portee[i]);
-				}
 			}
+		}
+		
+		// Vérification du délai d'affichage des flammes
+		
+		if(bombesExplosees->taille && verifierDelai(bombesExplosees->premier->instant, DELAI_BOMBE+DELAI_FLAMMES))
+		{
+			afficherExplosion(carte, bombesExplosees->premier, VIDE);
+				// Effacement de l'explosion de la bombe (en remplaçant les FLAMME par VIDE)
+			supprimerBombe(bombesExplosees, 0);
 		}
 		
 		
 		
 		
-		// Mise à jour de l'écran, collage des surfaces
+		// MAJ DE L'ECRAN, COLLAGE DES SURFACES
 		
 		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
 		blitterSurfaces(ecran, carte, mur, brique, bombe, flamme);
@@ -193,7 +196,7 @@ int jouerPartie(SDL_Surface* ecran)
 		SDL_Flip(ecran);
 	}
 	
-	// Libération des surfaces
+	// LIBERATION DES SURFACES
 	
 	SDL_FreeSurface(mur);
 	SDL_FreeSurface(brique);
@@ -339,17 +342,13 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 }
 
 // Renvoie 1 si le délai est passé
-int verifierDelai(Liste *liste, int delai)
+int verifierDelai(int instant, int delai)
 {
-	int instantActuel = (int)SDL_GetTicks(), instantInitial = 0;
+	int instantActuel = (int)SDL_GetTicks();
 	
-	if(liste->premier != NULL) // Si il y a au moins 1 élément
+	if(instantActuel-instant >= delai)
 	{
-		instantInitial = liste->premier->instant;
-		if(instantActuel-instantInitial >= delai)
-		{
-			return 1;
-		}
+		return 1;
 	}
 	
 	return 0;
@@ -358,6 +357,7 @@ int verifierDelai(Liste *liste, int delai)
 
 void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees)
 {
+	Maillon *bombeExplosee = NULL;
 	Position posBombe;
 	int portee[4] = {0}, instantBombe = 0;
 	
@@ -365,8 +365,6 @@ void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees)
 	posBombe.y = joueur->listeBombes->premier->position.y;
 	instantBombe = joueur->listeBombes->premier->instant;
 		// Pour simplifier la lecture du code
-		
-	carte[posBombe.y][posBombe.x] = FLAMME; // A mettre dans afficherExplosion() !!
 	
 	determinerPortee(carte, joueur->puissanceBombe, posBombe, portee);
 	
@@ -378,13 +376,19 @@ void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees)
 		// Supprime la 1ere bombe de la liste, celle qui doit exploser
 	joueur->bombesRestantes++;
 	
+	bombeExplosee = recupererElement(bombesExplosees, bombesExplosees->taille - 1);
+		// On récupère la bombe qui vient d'exploser : le dernier élément de bombesExplosees
+	afficherExplosion(carte, bombeExplosee, FLAMME);
+		// On affiche son explosion
+	
 	return;
 }
 
 
 void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[])
 {
-	int i = 0;
+	int i = 0, bool[4] = {1, 1, 1, 1};
+		// bool sert à indiquer le moment où on arrête de vérifier la portée de la bombe à une direction donnée 
 	
 	// INITIALISATION (on sait jamais)
 	
@@ -401,31 +405,51 @@ void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBom
 	{
 		// EN HAUT
 		if(posBombe.y >= i && (carte[posBombe.y - i][posBombe.x] == VIDE ||
-								carte[posBombe.y - i][posBombe.x] == FLAMME))
+								carte[posBombe.y - i][posBombe.x] == FLAMME ||
+								carte[posBombe.y - i][posBombe.x] == BOMBE) && bool[HAUT])
 		{
 			portee[HAUT]++;
+		}
+		else
+		{
+			bool[HAUT] = 0; // On arrête de vérifier cette direction
 		}
 		
 		// EN BAS
 		if(posBombe.y + i <= NB_CASES-1 && (carte[posBombe.y + i][posBombe.x] == VIDE ||
-											carte[posBombe.y + i][posBombe.x] == FLAMME))
+											carte[posBombe.y + i][posBombe.x] == FLAMME ||
+											carte[posBombe.y + i][posBombe.x] == BOMBE) && bool[BAS])
 		{
 			portee[BAS]++;
+		}
+		else
+		{
+			bool[BAS] = 0; // On arrête de vérifier cette direction
 		}
 		
 		
 		// A GAUCHE
 		if(posBombe.x >= i && (carte[posBombe.y][posBombe.x - i] == VIDE ||
-								carte[posBombe.y][posBombe.x - i] == FLAMME))
+								carte[posBombe.y][posBombe.x - i] == FLAMME ||
+								carte[posBombe.y][posBombe.x - i] == BOMBE) && bool[GAUCHE])
 		{
 			portee[GAUCHE]++;
+		}
+		else
+		{
+			bool[GAUCHE] = 0; // On arrête de vérifier cette direction
 		}
 		
 		// A DROITE
 		if(posBombe.x + i <= NB_CASES-1 && (carte[posBombe.y][posBombe.x + i] == VIDE ||
-											carte[posBombe.y][posBombe.x + i] == FLAMME))
+											carte[posBombe.y][posBombe.x + i] == FLAMME ||
+											carte[posBombe.y][posBombe.x + i] == BOMBE) && bool[DROITE])
 		{
 			portee[DROITE]++;
+		}
+		else
+		{
+			bool[DROITE] = 0; // On arrête de vérifier cette direction
 		}
 	}
 	
@@ -433,9 +457,37 @@ void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBom
 }
 
 
-/*void afficherExplosion(int carte[][NB_CASES], Maillon bombe)
+void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone)
 {
-	int i = 0;
+	// icone vaudra FLAMME si on veut afficher l'explosion, VIDE si on veut l'effacer
+	int i = 0, j = 0;
 	
-	for
-}*/
+	carte[bombe->position.y][bombe->position.x] = icone;
+	
+	for(i=0; i<4; i++)
+	{
+		for(j=1; j<=bombe->portee[i]; j++)
+		{
+			switch(i)
+			{
+				case HAUT:
+					carte[bombe->position.y - j][bombe->position.x] = icone;
+					break;
+					
+				case BAS:
+					carte[bombe->position.y + j][bombe->position.x] = icone;
+					break;
+					
+				case GAUCHE:
+					carte[bombe->position.y][bombe->position.x - j] = icone;
+					break;
+					
+				case DROITE:
+					carte[bombe->position.y][bombe->position.x + j] = icone;
+					break;
+			}
+		}
+	}
+	
+	return;
+}

@@ -176,9 +176,9 @@ Maillon *recupererElement(Liste *liste, int rang)
 	int i = 0;
 	Maillon *courant = liste->premier;
 	
-	if(courant == NULL || rang <= 0 || rang >= liste->taille)
+	if(courant == NULL || rang < 0 || rang >= liste->taille)
 	{
-		printf("Erreur : la liste ne contient élément ou le rang est négatif/nul/superieur a la taille de la liste\n");
+		printf("Erreur : la liste ne contient élément ou le rang est négatif/superieur a la taille de la liste\n");
 	}
 	else
 	{
