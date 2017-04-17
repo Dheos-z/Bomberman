@@ -49,7 +49,7 @@ void afficherListe(Liste *liste)
 
 
 // Ajouter une bombe à la fin de la liste
-void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int porteeBombe[])
+void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe)
 {
 	Maillon *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Maillon));
 	int i = 0;
@@ -75,12 +75,11 @@ void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int port
 	nouveau->suivant = NULL;
 	liste->taille++;
 	
-	if(porteeBombe != NULL) // Si on a décidé de mettre en argument le tableau pour ajouter la portée de la bombe
+	for(i=0; i<4; i++) // Initialisation du tableau de booléennes et des positions à 0
 	{
-		for(i=0; i<4; i++)
-		{
-			nouveau->portee[i] = porteeBombe[i];
-		}
+		nouveau->brique.bool[i] = 0;
+		nouveau->brique.position.x = 0;
+		nouveau->brique.position.y = 0;
 	}
 
 	return;

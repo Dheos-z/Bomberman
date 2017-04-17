@@ -76,9 +76,25 @@ du vide.
 
 Pour l'affichage de l'explosion, c'est une question 
 de délai (l'explosion doit être visible pendant DELAI_FLAMME millisecondes).
-A chaque fois qu'une bombe explose, on enregistre : l'instant quand elle a
-explosé, sa position sur la carte et sa portée dans une liste chaînée
-de bombes qui ont explosé. 
+A chaque fois qu'une bombe explose, on enregistre sa position 
+sur la carte et sa portée dans une liste chaînée de bombes 
+qui ont explosé, bombesExplosees.
 Dans la boucle principale de jeu, on vérifie pour l'ensemble de cette liste
-si le délai est respecté. Si oui, on 
+si le délai est respecté dans verifierDelai(). Si oui, on efface l'explosion
+grâce à afficherExplosion().
 
+
+* Conséquences de la bombe :
+
+Cassage des briques : Au moment de la détermination de la portée, la flamme
+s'arrêtera si elle rencontre une brique. Là où elle s'est arrêtée, 
+on vérifie d'abord si la bombe n'est pas au bord de la map, puis si à la
+case d'après se trouve une brique. Si oui, dans un tableau 4 booléennes
+(pour chaque direction), on attribue la valeur 1 à la direction donnée, 
+puis on note dans un tableau de 4 positions (chaque direction) 
+la position de la brique à casser. A finir
+
+Explosion d'une autre bombe sur son passage :
+Tuer un joueur :
+Brûler des items : ça fonctionne déjà, lorsqu'elle rencontre un item elle
+l'écrase en posant sa FLAMME

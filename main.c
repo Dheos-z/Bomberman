@@ -1,12 +1,15 @@
-/* 17/04/17
+/* 21/04/17
  * 
  * Fait : 
- * Animation de la bombe qui explose
+ * Rien
  * 
  * A faire : 
  * - Effets de l'explosion : si du feu touche une bombe ça la fait exploser,
  * si du feu touche une brique ça la casse, si ça touche un joueur le perso meurt, si ça touche
  * un item ça le brûle
+ * 
+ * On en est où : erreur de segmentation, je crois que c'est dans determinerPortee().
+ * Enlever le tableau portee et incrementer direct le tableau dans bombeExplosee.
  * 
  * Zak
  */

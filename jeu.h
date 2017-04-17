@@ -10,6 +10,13 @@ struct Position
 };
 typedef struct Position Position;
 
+struct Entite
+{
+	Position position;
+	char bool[4]; // Tableau de booléennes qui indique pour chaque direction si la bombe explosée a cassé un mur
+};
+typedef struct Entite Entite;
+
 #include "listes_chainees/bomberman_fct_listes_ch.h"
 
 struct Perso
@@ -37,7 +44,8 @@ void deplacerJoueur(Perso *joueur);
 void poserBombe(Perso *joueur, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);
 void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees);
-void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[]);
+void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[], Maillon *bombeExplosee);
 void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
+void casserBrique(Maillon *bombe, int carte[][NB_CASES]);
 
 #endif
