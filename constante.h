@@ -43,8 +43,8 @@ typedef struct Objet Objet;
 
 #define VITESSE 5
 #define MAX 100
-#define DELAI_BOMBE 3000 // En millisecondes
-#define DELAI_FLAMMES 1000
+#define DELAI_BOMBE 2000 // En millisecondes
+#define DELAI_FLAMMES 800
 
 
 #endif 

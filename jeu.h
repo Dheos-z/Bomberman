@@ -13,11 +13,9 @@ typedef struct Position Position;
 struct Entite
 {
 	Position position;
-	char bool[4]; // Tableau de booléennes qui indique pour chaque direction si la bombe explosée a cassé un mur
+	char bool; // Booléenne qui indique si la bombe explosée a cassé une brique
 };
 typedef struct Entite Entite;
-
-#include "listes_chainees/bomberman_fct_listes_ch.h"
 
 struct Perso
 {
@@ -29,9 +27,10 @@ struct Perso
 	int totalBombes;
 	int bombesRestantes;
 	int puissanceBombe;
-	Liste *listeBombes; // Répertorie les instants auxquels chaque bombe a été posée
 };
 typedef struct Perso Perso;
+
+#include "listes_chainees/bomberman_fct_listes_ch.h"
 
 
 // FONCTIONS
@@ -41,10 +40,10 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur);
-void poserBombe(Perso *joueur, int carte[][NB_CASES]);
+void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);
-void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees);
-void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[], Maillon *bombeExplosee);
+void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees);
+void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee);
 void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
 void casserBrique(Maillon *bombe, int carte[][NB_CASES]);
 

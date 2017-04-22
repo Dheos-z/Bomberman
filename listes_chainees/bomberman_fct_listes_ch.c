@@ -49,7 +49,7 @@ void afficherListe(Liste *liste)
 
 
 // Ajouter une bombe à la fin de la liste
-void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe)
+Maillon *ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur)
 {
 	Maillon *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Maillon));
 	int i = 0;
@@ -72,17 +72,22 @@ void ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe)
 	nouveau->instant = instantBombe;
 	nouveau->position.x = posBombe.x;
 	nouveau->position.y = posBombe.y;
+	nouveau->puissance = puissanceBombe;
+	nouveau->joueur = joueur;
+	
 	nouveau->suivant = NULL;
 	liste->taille++;
 	
-	for(i=0; i<4; i++) // Initialisation du tableau de booléennes et des positions à 0
+	// Initialisations
+	for(i=0; i<4; i++) 
 	{
-		nouveau->brique.bool[i] = 0;
-		nouveau->brique.position.x = 0;
-		nouveau->brique.position.y = 0;
+		nouveau->brique[i].bool = 0;
+		nouveau->brique[i].position.x = 0;
+		nouveau->brique[i].position.y = 0;
+		nouveau->portee[i] = 0;
 	}
 
-	return;
+	return nouveau;
 }
 
 

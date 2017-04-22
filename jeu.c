@@ -16,8 +16,7 @@ int jouerPartie(SDL_Surface* ecran)
 	Perso joueur[4];
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0};
 	Uint32 tempsActuel = 0;
-	Liste *bombesExplosees = initialiserListe();
-	Maillon *aSupp = NULL;
+	Liste *bombesPosees = initialiserListe(), *bombesExplosees = initialiserListe();
 		
 	// INITIALISATIONS
 	
@@ -81,9 +80,9 @@ int jouerPartie(SDL_Surface* ecran)
 						if(joueur[0].bombesRestantes && !joueur[0].bombePosee)
 							// Si il lui reste une bombe ET qu'il est pas déjà en train d'appuyer sur la touche
 						{
-							joueur[0].bombePosee = 1; 
-								// On indique qu'il est en train d'appuyer sur la touche
-							poserBombe(&joueur[0], carte);
+							joueur[0].bombePosee = 1;
+								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
+							poserBombe(&joueur[0], bombesPosees, carte);
 						}
 						break;
 						
@@ -167,22 +166,19 @@ int jouerPartie(SDL_Surface* ecran)
 		
 		// Vérification des bombes qui attendent d'exploser
 		
-		for(i=0; i<nbJoueurs; i++)
+		if(bombesPosees->taille && verifierDelai(bombesPosees->premier->instant, DELAI_BOMBE))
+			// On vérifie la première bombe de la liste des bombes posées
 		{
-			if(joueur[i].listeBombes->taille && verifierDelai(joueur[i].listeBombes->premier->instant, DELAI_BOMBE))
-				// On vérifie la première bombe de la liste des bombes du joueur
-			{
-				exploserBombe(carte, &joueur[i], bombesExplosees);
-			}
+			exploserBombe(carte, bombesPosees->premier, bombesPosees, bombesExplosees);
 		}
 		
-		// Vérification du délai d'affichage des flammes
+		// Vérification du délai d'affichage des flammes et cassage des briques
 		
 		if(bombesExplosees->taille && verifierDelai(bombesExplosees->premier->instant, DELAI_BOMBE+DELAI_FLAMMES))
 		{
 			afficherExplosion(carte, bombesExplosees->premier, VIDE);
 				// Effacement de l'explosion de la 1ere bombe de la liste (en remplaçant les FLAMME par VIDE)
-			//casserBrique(bombesExplosees->premier, carte);
+			casserBrique(bombesExplosees->premier, carte);
 			supprimerBombe(bombesExplosees, 0);
 		}
 		
@@ -317,10 +313,10 @@ void deplacerJoueur(Perso *joueur)
 
 
 
-void poserBombe(Perso *joueur, int carte[][NB_CASES])
+void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 {
 	Position repereBombe;
-	int bombeActuelle = joueur->totalBombes - joueur->bombesRestantes, instantBombe = 0;
+	int instantBombe = 0;
 	
 	repereBombe.x = (joueur->position.x + T_PERSO/2)/CASE;
 	repereBombe.y = (joueur->position.y + T_PERSO - 1)/CASE;
@@ -330,15 +326,9 @@ void poserBombe(Perso *joueur, int carte[][NB_CASES])
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
 	
 	instantBombe = (int)SDL_GetTicks();
-	ajouterBombeFin(joueur->listeBombes, instantBombe, repereBombe);
+	ajouterBombeFin(bombesPosees, instantBombe, repereBombe, joueur->puissanceBombe, joueur);
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
-	
-	// Affichage pour voir si tout fonctionne
-	
-	afficherCarte(carte);
-	afficherListe(joueur->listeBombes); // Test pr voir si ça marche (à supp)
-	printf("\nBombes restantes : %d\n", joueur->bombesRestantes);
 	
 	return;
 }
@@ -357,110 +347,123 @@ int verifierDelai(int instant, int delai)
 }
 
 
-void exploserBombe(int carte[][NB_CASES], Perso *joueur, Liste *bombesExplosees)
+void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees)
 {
 	Maillon *bombeExplosee = NULL;
-	Position posBombe;
-	int portee[4] = {0}, instantBombe = 0;
 	
-	posBombe.x = joueur->listeBombes->premier->position.x;
-	posBombe.y = joueur->listeBombes->premier->position.y;
-	instantBombe = joueur->listeBombes->premier->instant;
-		// Pour simplifier la lecture du code
-		
-	ajouterBombeFin(bombesExplosees, instantBombe, posBombe);
-		/* On ajoute une bombe explosée pour ensuite traiter le délai de
-			présence des flammes sur la carte */
+	bombeExplosee = ajouterBombeFin(bombesExplosees, bombe->instant, bombe->position, bombe->puissance, bombe->joueur);
+		/* On ajoute une bombe explosée pour ensuite pour ensuite exploiter
+		 * ses données + on récupère cette bombe */
 			
-	bombeExplosee = recupererElement(bombesExplosees, bombesExplosees->taille - 1);
-		// On récupère la bombe qui vient d'exploser : le dernier élément de bombesExplosees
-	determinerPortee(carte, joueur->puissanceBombe, posBombe, portee, bombeExplosee);
-	for(i=0; i<4; i++)
-	{
-		for
-	}
+	determinerPortee(carte, bombeExplosee);
 	afficherExplosion(carte, bombeExplosee, FLAMME);
 	
-	supprimerBombe(joueur->listeBombes, 0);
+	supprimerBombe(bombesPosees, 0);
 		// Supprime la 1ere bombe de la liste des bombes en attente d'explosion (pcq elle a explosé)
-	joueur->bombesRestantes++;
+	bombe->joueur->bombesRestantes++;
 	
 	return;
 }
 
 
-void determinerPortee(int carte[][NB_CASES], int puissanceBombe, Position posBombe, int portee[], Maillon *bombeExplosee)
+void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee)
 {
 	int i = 0, bool[4] = {1, 1, 1, 1};
 		// bool sert à indiquer le moment où on arrête de vérifier la portée de la bombe à une direction donnée
+	Position posBombe;
 	
-	// INITIALISATION (on sait jamais)
+	posBombe.x = bombeExplosee->position.x;
+	posBombe.y = bombeExplosee->position.y;
 	
-	for(i=0; i<4; i++)
-	{
-		portee[i] = 0;
-	}
-	
-	// DETERMINATION PORTEE
-	
-	for(i=1; i<=puissanceBombe; i++)
+	for(i=1; i<=bombeExplosee->puissance; i++)
 	{
 		// EN HAUT
-		/*if(posBombe.y >= i && bool[HAUT]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
+		if(posBombe.y >= i && bool[HAUT]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
 		{
 			if(carte[posBombe.y - i][posBombe.x] == VIDE ||
 				carte[posBombe.y - i][posBombe.x] == FLAMME ||
 				carte[posBombe.y - i][posBombe.x] == BOMBE)
 			{
-				portee[HAUT]++;
+				bombeExplosee->portee[HAUT]++;
 			}
 			else if(carte[posBombe.y - i][posBombe.x] == BRIQUE)
 			{
-				bombeExplosee->brique.bool[HAUT] = 1;
-				bombeExplosee->brique.position.x = posBombe.x;
-				bombeExplosee->brique.position.y = posBombe.y - i;
+				bombeExplosee->brique[HAUT].bool = 1;
+				bombeExplosee->brique[HAUT].position.x = posBombe.x;
+				bombeExplosee->brique[HAUT].position.y = posBombe.y - i;
+				bool[HAUT] = 0;
 			}
 			else
 			{
 				bool[HAUT] = 0; // On arrête de vérifier cette direction
 			}
-		}*/
+		}
 		
 		// EN BAS
-		if(posBombe.y + i <= NB_CASES-1 && (carte[posBombe.y + i][posBombe.x] == VIDE ||
-											carte[posBombe.y + i][posBombe.x] == FLAMME ||
-											carte[posBombe.y + i][posBombe.x] == BOMBE) && bool[BAS])
+		if(posBombe.y + i <= NB_CASES-1 && bool[BAS]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
 		{
-			portee[BAS]++;
-		}
-		else
-		{
-			bool[BAS] = 0; // On arrête de vérifier cette direction
+			if(carte[posBombe.y + i][posBombe.x] == VIDE ||
+				carte[posBombe.y + i][posBombe.x] == FLAMME ||
+				carte[posBombe.y + i][posBombe.x] == BOMBE)
+			{
+				bombeExplosee->portee[BAS]++;
+			}
+			else if(carte[posBombe.y + i][posBombe.x] == BRIQUE)
+			{
+				bombeExplosee->brique[BAS].bool = 1;
+				bombeExplosee->brique[BAS].position.x = posBombe.x;
+				bombeExplosee->brique[BAS].position.y = posBombe.y + i;
+				bool[BAS] = 0;
+			}
+			else
+			{
+				bool[BAS] = 0; // On arrête de vérifier cette direction
+			}
 		}
 		
 		
 		// A GAUCHE
-		if(posBombe.x >= i && (carte[posBombe.y][posBombe.x - i] == VIDE ||
-								carte[posBombe.y][posBombe.x - i] == FLAMME ||
-								carte[posBombe.y][posBombe.x - i] == BOMBE) && bool[GAUCHE])
+		if(posBombe.x >= i && bool[GAUCHE]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
 		{
-			portee[GAUCHE]++;
-		}
-		else
-		{
-			bool[GAUCHE] = 0; // On arrête de vérifier cette direction
+			if(carte[posBombe.y][posBombe.x - i] == VIDE ||
+				carte[posBombe.y][posBombe.x - i] == FLAMME ||
+				carte[posBombe.y][posBombe.x - i] == BOMBE)
+			{
+				bombeExplosee->portee[GAUCHE]++;
+			}
+			else if(carte[posBombe.y][posBombe.x - i] == BRIQUE)
+			{
+				bombeExplosee->brique[GAUCHE].bool = 1;
+				bombeExplosee->brique[GAUCHE].position.x = posBombe.x - i;
+				bombeExplosee->brique[GAUCHE].position.y = posBombe.y;
+				bool[GAUCHE] = 0;
+			}
+			else
+			{
+				bool[GAUCHE] = 0; // On arrête de vérifier cette direction
+			}
 		}
 		
 		// A DROITE
-		if(posBombe.x + i <= NB_CASES-1 && (carte[posBombe.y][posBombe.x + i] == VIDE ||
-											carte[posBombe.y][posBombe.x + i] == FLAMME ||
-											carte[posBombe.y][posBombe.x + i] == BOMBE) && bool[DROITE])
+		if(posBombe.x + i <= NB_CASES-1 && bool[DROITE]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
 		{
-			portee[DROITE]++;
-		}
-		else
-		{
-			bool[DROITE] = 0; // On arrête de vérifier cette direction
+			if(carte[posBombe.y][posBombe.x + i] == VIDE ||
+				carte[posBombe.y][posBombe.x + i] == FLAMME ||
+				carte[posBombe.y][posBombe.x + i] == BOMBE)
+			{
+				bombeExplosee->portee[DROITE]++;
+			}
+			else if(carte[posBombe.y][posBombe.x + i] == BRIQUE)
+			{
+				bombeExplosee->brique[DROITE].bool = 1;
+				bombeExplosee->brique[DROITE].position.x = posBombe.x + i;
+				bombeExplosee->brique[DROITE].position.y = posBombe.y;
+				bool[DROITE] = 0;
+			}
+			else
+			{
+				bool[DROITE] = 0; // On arrête de vérifier cette direction
+			}
 		}
 	}
 	
@@ -510,9 +513,10 @@ void casserBrique(Maillon *bombe, int carte[][NB_CASES])
 	
 	for(i=0; i<4; i++)
 	{
-		if(bombe->brique.bool[i])
+		if(bombe->brique[i].bool)
 		{
-			carte[bombe->brique.position.y][bombe->brique.position.x] = VIDE;
+			carte[bombe->brique[i].position.y][bombe->brique[i].position.x] = VIDE;
+			bombe->brique[i].bool = 0;
 		}
 	}
 	

@@ -1,0 +1,36 @@
+
+poserBombe() :
+
+- Ajout de la bombe sur la carte (pile entre les 2 pieds du personnage) 
+grâce à ses positions
+- Décrémentation de la variable bombesRestantes
+- Ajout d'une bombe à la fin de la liste bombesPosees avec ajouterBombeFin()
+
+ajouterBombeFin() :
+
+Fonction pour les listes chaînées.
+- Attribution des valeurs des classes du Maillon bombe selon les arguments
+donnés en paramètre : instant où la bombe a été posée, puissance, position,
+joueur qui l'a posée
+- Initialisation du reste : portée de la bombe, briques à casser
+
+
+verifierDelai() :
+
+- On définit une variable tempsActuel qui vaudra l'instant actuel grâce à
+SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
+l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
+- Si oui, la fn renvoie 1.
+
+
+exploserBombe() :
+
+- Ajout de la bombe explosée dans la liste bombesExplosees
+- Détermination de la portée de la bombe dans determinerPortee()
+- Affichage de l'explosion de cette bombe dans afficherBombe()
+- Suppression de la bombe posée (puisqu'elle a explosé) de la liste
+ bombesPosees grâce à supprimerBombe() (fonction pour liste chaînée).
+- bombes restantes du joueur ++
+
+
+

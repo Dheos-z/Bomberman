@@ -31,7 +31,6 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	joueur->totalBombes = 10;
 	joueur->bombesRestantes = joueur[0].totalBombes;
 	joueur->puissanceBombe = 3;
-	joueur->listeBombes = initialiserListe();
 	
 	return;
 }

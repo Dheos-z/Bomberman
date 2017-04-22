@@ -12,7 +12,10 @@ Les personnages ne sont pas présents dans la carte,
 on préfère repérer leurs positions en pixels en créant des variables SDL_Rect.
 
 
-* Pose de bombe :
+
+
+* POSE DE BOMBE :
+
 Chaque joueur a un nombre total de bombes à la base, et un nombre de bombes
 restantes (2 variables différentes).
 Pour chaque joueur, on vérifie si la touche de pose de bombe a été appuyée dans la boucle de jeu.
@@ -20,32 +23,33 @@ Si oui, on vérifie si il lui reste au moins 1 bombe et si la touche d'appui de 
 n'était pas déjà appuyée à l'instant t-1 (très important ! On veut qu'il ne puisse poser
 qu'une seule bombe à la fois, même si il reste appuyé).
 Si les conditions sont vérifiées, on appelle la
-fonction poserBombe() :
-- Ajout de la bombe sur la carte (pile entre les 2 pieds du personnage) grâce à ses positions
-- Décrémentation de la variable bombesRestantes
-- Ajout d'une bombe à la fin de listeBombes avec ajouterBombeFin() :
-	- Ajout de l'instant auquel la bombe a été posée avec SDL_GetTicks()
-	- Ajout des positions de la bombe sur la carte (utile quand on voudra la faire exploser)
-	- Incrémentation de la taille de listeBombes
+fonction poserBombe().
 
 
-* Explosion de bombe :
-On vérifie à la fin de la boucle des événements si la première
-bombe posée par chaque joueur peut exploser, dans verifierBombe() :
-- On définit une variable tempsActuel qui vaudra l'instant actuel grâce à
-SDL_GetTicks. On vérifie dans un if si la différence entre tempsActuel et
-l'instant où la bombe a été posée vaut le délai souhaité (DELAI_BOMBE).
-- Si oui, on peut faire exploser la bombe dans exploserBombe() :
-	- Effacement de la bombe de la carte grâce à ses positions
-	- Effacement du premier élément de listeBombes
-	  grâce à supprimerBombe() :
-		- Décrémentation de listeBombe->taille
-	- Incrémentation de bombesRestantes
-	- Détermination de la portée de la bombe dans determinerPortee()
-	- Ajout d'une bombe explosée dans la liste bombesExplosées
-	  afin de traiter plus tard le délai de présence des flammes sur
-	  sur la carte
-	- Affichage de l'explosion dans afficherExplosion() 
+
+
+
+* EXPLOSION DE BOMBE :
+
+1) On vérifie à la fin de la boucle des événements si la première
+bombe posée par chaque joueur peut exploser, dans verifierDelai().
+
+Si la fn renvoie 1, on fait exploser la bombe grâce à exploserBombe().
+
+
+grâce à supprimerBombe() :
+- Décrémentation de listeBombe->taille
+- Incrémentation de bombesRestantes
+- Détermination de la portée de la bombe dans determinerPortee()
+- Ajout d'une bombe explosée dans la liste bombesExplosées
+  afin de traiter plus tard le délai de présence des flammes sur
+  sur la carte
+- Affichage de l'explosion dans afficherExplosion() 
+
+
+
+
+
 
 * Affichage de l'explosion :
 
@@ -86,13 +90,16 @@ grâce à afficherExplosion().
 
 * Conséquences de la bombe :
 
-Cassage des briques : Au moment de la détermination de la portée, la flamme
-s'arrêtera si elle rencontre une brique. Là où elle s'est arrêtée, 
-on vérifie d'abord si la bombe n'est pas au bord de la map, puis si à la
-case d'après se trouve une brique. Si oui, dans un tableau 4 booléennes
-(pour chaque direction), on attribue la valeur 1 à la direction donnée, 
-puis on note dans un tableau de 4 positions (chaque direction) 
-la position de la brique à casser. A finir
+- Cassage des briques : Au moment de la détermination de la portée, dans
+determinerPortee():
+la flamme parcoure le terrain et s'arrêtera si elle rencontre une brique. 
+Si oui, dans un tableau de 4 briques (pour chaque direction) dans la 
+classe brique de la structure Maillon, on attribue 
+la valeur 1 à la direction donnée, ça veut dire que cette bombe va casser
+une brique dans cette direction.
+On note la position de la brique à casser. Dans jouerPartie(), au moment où on
+détermine l'explosion des flammes, on vérifie aussi si des briques doivent
+être cassées dans casserBrique(). Voilà.
 
 Explosion d'une autre bombe sur son passage :
 Tuer un joueur :
