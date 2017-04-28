@@ -16,6 +16,8 @@ typedef struct Objet Objet;
 
 // DIMENSIONS
 
+#define CASE_JOUEUR 40
+
 #define CASE 45 // Taille d'une case en pixels (A NE PAS MODIFIER)
 #define T_PERSO 45 // Taille d'un perso en pixels (pour l'instant T_PERSO = CASE mais on ne sait jamais si il faut modifier sa taille)
 #define NB_CASES 15 // Nombre de cases de côté (A NE PAS MODIFIER)
@@ -31,6 +33,13 @@ typedef struct Objet Objet;
 #define PERSO 3
 #define BOMBE 4
 #define FLAMME 5
+#define ITEM_FLAMME 6
+#define ITEM_BOMBE 7
+#define ITEM_ROLLER 8
+#define ITEM_PIED 9
+
+#define PROBA_FLAMME 2 // 1 chance sur PROBA_FLAMME d'obtenir un item flamme
+#define PROBA_BOMBE 2
 
 // DIRECTIONS
 

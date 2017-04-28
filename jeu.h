@@ -36,10 +36,12 @@ typedef struct Perso Perso;
 // FONCTIONS
 
 int jouerPartie(SDL_Surface* ecran);
-void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme);
+void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
+					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme, SDL_Surface *itemFlamme, 
+					SDL_Surface *itemBombe, SDL_Surface *itemPied, SDL_Surface *itemRoller);
 void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
-void deplacerJoueur(Perso *joueur);
+void deplacerJoueur(Perso *joueur, int carte[][NB_CASES]);
 void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);
 void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees);

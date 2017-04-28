@@ -4,14 +4,15 @@
 #include <SDL/SDL.h>
 #include "jeu.h"
 #include "listes_chainees/bomberman_fct_listes_ch.h"
-
+#include <time.h>
 
 
 
 int jouerPartie(SDL_Surface* ecran)
 {
 	SDL_Event event;
-	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL, *flamme = NULL;
+	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL, *flamme = NULL, *itemBombe = NULL, *itemFlamme = NULL,
+				*itemPied = NULL, *itemRoller = NULL;
 	SDL_Surface *perso[4] = {NULL};
 	Perso joueur[4];
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0};
@@ -20,7 +21,7 @@ int jouerPartie(SDL_Surface* ecran)
 		
 	// INITIALISATIONS
 	
-	initSurfaces(&mur, &brique, &bombe, &flamme, perso);
+	initSurfaces(&mur, &brique, &bombe, &flamme, &itemBombe, &itemFlamme, &itemPied, &itemRoller, perso);
 	
 		// Modèle : void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	initJoueur(&joueur[0], perso[BAS], CASE, CASE);
@@ -159,7 +160,7 @@ int jouerPartie(SDL_Surface* ecran)
 		
 		for(i=0; i<nbJoueurs; i++)
 		{
-			deplacerJoueur(&joueur[i]);
+			deplacerJoueur(&joueur[i], carte);
 		}
 		
 		// TRAITEMENT DES BOMBES
@@ -188,7 +189,7 @@ int jouerPartie(SDL_Surface* ecran)
 		// MAJ DE L'ECRAN, COLLAGE DES SURFACES
 		
 		SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
-		blitterSurfaces(ecran, carte, mur, brique, bombe, flamme);
+		blitterSurfaces(ecran, carte, mur, brique, bombe, flamme, itemFlamme, itemBombe, itemPied, itemRoller);
 		blitterPerso(ecran, joueur, nbJoueurs);
 		SDL_Flip(ecran);
 	}
@@ -211,7 +212,8 @@ int jouerPartie(SDL_Surface* ecran)
 
 
 void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
-					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme)
+					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme, SDL_Surface *itemFlamme, 
+					SDL_Surface *itemBombe, SDL_Surface *itemPied, SDL_Surface *itemRoller)
 {
 	int i = 0, j = 0;
 	SDL_Rect position;
@@ -238,8 +240,26 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 				case BOMBE:
 					SDL_BlitSurface(bombe, NULL, ecran, &position);
 					break;
+					
 				case FLAMME:
 					SDL_BlitSurface(flamme, NULL, ecran, &position);
+					break;
+					
+				case ITEM_FLAMME:
+					SDL_BlitSurface(itemFlamme, NULL, ecran, &position);
+					break;	
+								
+				case ITEM_BOMBE:
+					SDL_BlitSurface(itemBombe, NULL, ecran, &position);
+					break;		
+								
+				case ITEM_ROLLER:
+					SDL_BlitSurface(itemRoller, NULL, ecran, &position);
+					break;
+					
+				case ITEM_PIED:
+					SDL_BlitSurface(itemPied, NULL, ecran, &position);
+					break;
 			}
 		}
 	}
@@ -278,7 +298,7 @@ void afficherCarte(int carte[][NB_CASES])
 }
 
 
-void deplacerJoueur(Perso *joueur)
+void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 {
 	int i=0;
 	
@@ -293,7 +313,7 @@ void deplacerJoueur(Perso *joueur)
 	{
 		switch(i)
 		{
-			case HAUT:
+			/*case HAUT:
 				joueur->position.y -= VITESSE;
 				break;
 			case BAS:
@@ -303,6 +323,23 @@ void deplacerJoueur(Perso *joueur)
 				joueur->position.x -= VITESSE;
 				break;
 			case DROITE:
+				joueur->position.x += VITESSE;
+				break;*/
+				
+			case HAUT:
+			if(carte[(joueur->position.y-1)/CASE][joueur->position.x/CASE] == 0 && carte[(joueur->position.y-1)/CASE][(joueur->position.x+CASE_JOUEUR)/CASE] == 0)
+				joueur->position.y -= VITESSE;
+				break;
+			case BAS:
+			if(carte[(joueur->position.y+CASE_JOUEUR+1)/CASE][joueur->position.x/CASE] == 0 && carte[(joueur->position.y+CASE_JOUEUR+1)/CASE][(joueur->position.x+CASE_JOUEUR)/CASE] == 0)
+				joueur->position.y += VITESSE;
+				break;
+			case GAUCHE:
+			if(carte[(joueur->position.y)/CASE][joueur->position.x-1/CASE] == 0 && carte[(joueur->position.y+CASE_JOUEUR)/CASE][(joueur->position.x-1)/CASE] == 0)
+				joueur->position.x -= VITESSE;
+				break;
+			case DROITE:
+			if(carte[(joueur->position.y)/CASE][joueur->position.x+CASE/CASE] == 0 && carte[(joueur->position.y+CASE)/CASE][(joueur->position.x+CASE)/CASE] == 0)
 				joueur->position.x += VITESSE;
 				break;
 		}
@@ -509,13 +546,24 @@ void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone)
 
 void casserBrique(Maillon *bombe, int carte[][NB_CASES])
 {
-	int i=0;
+	int i=0, icone = VIDE, randBombe = rand()%PROBA_BOMBE, randFlamme = rand()%PROBA_FLAMME;
+	
+	if(!randBombe)
+	{
+		icone = ITEM_BOMBE;
+		printf("prout\n");
+	}
+	else if(!randFlamme)
+	{
+		icone = ITEM_FLAMME;
+		printf("prout\n");
+	}
 	
 	for(i=0; i<4; i++)
 	{
 		if(bombe->brique[i].bool)
 		{
-			carte[bombe->brique[i].position.y][bombe->brique[i].position.x] = VIDE;
+			carte[bombe->brique[i].position.y][bombe->brique[i].position.x] = icone;
 			bombe->brique[i].bool = 0;
 		}
 	}

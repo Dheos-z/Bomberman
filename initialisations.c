@@ -4,12 +4,17 @@
 #include "jeu.h"
 #include "initialisations.h"
 
-void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **flamme, SDL_Surface **perso)
+void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **flamme, 
+					SDL_Surface **itemBombe, SDL_Surface **itemFlamme, SDL_Surface **itemPied, SDL_Surface **itemRoller, SDL_Surface **perso)
 {
 	*mur = SDL_LoadBMP("images/MUR.bmp");
 	*brique = SDL_LoadBMP("images/BRIQUE.bmp");
 	*bombe = SDL_LoadBMP("images/BOMBE.bmp");
 	*flamme = SDL_LoadBMP("images/flamme.bmp");
+	*itemFlamme = SDL_LoadBMP("images/item_flamme.bmp");
+	*itemRoller = SDL_LoadBMP("images/item_roller.bmp");
+	*itemPied = SDL_LoadBMP("images/item_pied.bmp");
+	*itemBombe = SDL_LoadBMP("images/item_bombe.bmp");
 	
 	perso[BAS] = SDL_LoadBMP("images/BAS.bmp");
 	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
