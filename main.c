@@ -1,4 +1,4 @@
-/* 21/04/17
+/* 30/04/17
  * 
  * Fait : 
  * Que de la merde
@@ -14,6 +14,9 @@
  * Génération d'items quand on casse une brique : y a un truc qui
  * marche pas dans casserBrique(), changer de technique. Idée : 
  * dans la structure brique (Entité je crois) mettre l'item que contient la brique (c'est stylé ça)
+ * 
+ * J'arrive pas à charger les images item_bombe, item_flamme, item_roller et item_pied ça casse
+ * les couilles
  * 
  * Zak
  */

@@ -5,6 +5,7 @@
 #include "jeu.h"
 #include "listes_chainees/bomberman_fct_listes_ch.h"
 #include <time.h>
+#include "initialisations.h"
 
 
 
@@ -35,6 +36,7 @@ int jouerPartie(SDL_Surface* ecran)
 	
 		// Lecture du niveau
 	lireFichier(carte);
+	afficherCarte(carte);
 	
 	// BOUCLE DES EVENEMENTS
 	
@@ -313,7 +315,7 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 	{
 		switch(i)
 		{
-			/*case HAUT:
+			case HAUT:
 				joueur->position.y -= VITESSE;
 				break;
 			case BAS:
@@ -324,9 +326,9 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 				break;
 			case DROITE:
 				joueur->position.x += VITESSE;
-				break;*/
+				break;
 				
-			case HAUT:
+			/*case HAUT:
 			if(carte[(joueur->position.y-1)/CASE][joueur->position.x/CASE] == 0 && carte[(joueur->position.y-1)/CASE][(joueur->position.x+CASE_JOUEUR)/CASE] == 0)
 				joueur->position.y -= VITESSE;
 				break;
@@ -341,7 +343,7 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 			case DROITE:
 			if(carte[(joueur->position.y)/CASE][joueur->position.x+CASE/CASE] == 0 && carte[(joueur->position.y+CASE)/CASE][(joueur->position.x+CASE)/CASE] == 0)
 				joueur->position.x += VITESSE;
-				break;
+				break;*/
 		}
 	}
 	
