@@ -1,4 +1,4 @@
-/* 30/04/17
+/* 5/5/17
  * 
  * Fait : 
  * Que de la merde
@@ -8,15 +8,16 @@
  * si du feu touche une brique ça la casse, si ça touche un joueur le perso meurt, si ça touche
  * un item ça le brûle
  * 
- * On en est où : finir de rédiger avancement.txt et description_fonctions.txt
- * Faire en sorte que lorsqu'une bombe touche une autre bombe, ça la fait exploser aussi.
+ * Ce que j'étais en train de faire :
+ * Dans determinerPortee(), lorsque qu'une flamme atteint une autre bombe, retrouver cette bombe
+ * dans bombesPosees, changer son instant (SDL_GetTicks() + DELAI_BOMBE) pour qu'elle explose direct
+ * quand on vérifie son délai, et modifier sa position dans bombesPosees : la mettre au rang 1 comme ça
+ * la bombe qui a déjà explosée (et provoqué la nouvelle explosion)
+ * partira du rang 0 de bombesPosees et c'est celle qui doit exploser (celle à qui on a modifié l'instant)
+ * qui prendra la position 0 et elle sera vérifiée pour exploser.
+ * Pour ça, faire une nouvelle fonction de liste chaînée qui déplace un élément
  * 
- * Génération d'items quand on casse une brique : y a un truc qui
- * marche pas dans casserBrique(), changer de technique. Idée : 
- * dans la structure brique (Entité je crois) mettre l'item que contient la brique (c'est stylé ça)
  * 
- * J'arrive pas à charger les images item_bombe, item_flamme, item_roller et item_pied ça casse
- * les couilles
  * 
  * Zak
  */

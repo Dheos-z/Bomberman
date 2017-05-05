@@ -405,11 +405,12 @@ void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, L
 }
 
 
-void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee)
+void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees)
 {
 	int i = 0, bool[4] = {1, 1, 1, 1};
 		// bool sert à indiquer le moment où on arrête de vérifier la portée de la bombe à une direction donnée
-	Position posBombe;
+	Position posBombe, posBombePassage;
+	Maillon *bombePassage = NULL; // Quand je vais vérifier dans les 4 directions il m'en faudrait 4 !!
 	
 	posBombe.x = bombeExplosee->position.x;
 	posBombe.y = bombeExplosee->position.y;
@@ -417,13 +418,26 @@ void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee)
 	for(i=1; i<=bombeExplosee->puissance; i++)
 	{
 		// EN HAUT
-		if(posBombe.y >= i && bool[HAUT]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
+		if(posBombe.y >= i && bool[HAUT]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion, on peut vérifier la case suivante
 		{
 			if(carte[posBombe.y - i][posBombe.x] == VIDE ||
 				carte[posBombe.y - i][posBombe.x] == FLAMME ||
 				carte[posBombe.y - i][posBombe.x] == BOMBE)
 			{
 				bombeExplosee->portee[HAUT]++;
+				
+				// EN TRAVAUX
+				
+				/*
+				if(carte[posBombe.y - i][posBombe.x] == BOMBE) // Elle rencontre une bombe sur son chemin : on la fait exploser
+				{
+					posBombePassage.x posBombe.x;
+					posBombePassage.y = posBombe.y - i;
+					bombePassage = chercherBombe(posBombePassage, bombesPosees);
+					
+					bombePassage->instant = SDL_GetTicks() + DELAI_BOMBE;
+				}
+				*/
 			}
 			else if(carte[posBombe.y - i][posBombe.x] == BRIQUE)
 			{
@@ -550,20 +564,21 @@ void casserBrique(Maillon *bombe, int carte[][NB_CASES])
 {
 	int i=0, icone = VIDE, randBombe = rand()%PROBA_BOMBE, randFlamme = rand()%PROBA_FLAMME;
 	
+	/* MISE EN PAUSE DE CETTE PARTIE DU PROJET : GENERATION D'ITEMS
+	 * C'EST MUS QUI VA LA FAIRE 
 	if(!randBombe)
 	{
 		icone = ITEM_BOMBE;
-		printf("prout\n");
 	}
 	else if(!randFlamme)
 	{
 		icone = ITEM_FLAMME;
-		printf("prout\n");
 	}
+	*/
 	
 	for(i=0; i<4; i++)
 	{
-		if(bombe->brique[i].bool)
+		if(bombe->brique[i].bool) // Si bool vaut 1, la brique peut se casser à la position trouvée
 		{
 			carte[bombe->brique[i].position.y][bombe->brique[i].position.x] = icone;
 			bombe->brique[i].bool = 0;
@@ -571,4 +586,20 @@ void casserBrique(Maillon *bombe, int carte[][NB_CASES])
 	}
 	
 	return;
+}
+
+// Recherche une bombe dans la liste des bombes posées à partir de ses positions
+Maillon *chercherBombe(Position posBombe, Liste *bombesPosees)
+{
+	
+	Maillon *courant = liste->premier;
+	int i = 0;
+	
+	while( (courant->position.x != posBombe.x || courant->position.y != posBombe.y) &&  i < liste->taille)
+	{
+		courant = courant->suivant;
+		i++;
+	}
+	
+	return courant;
 }
