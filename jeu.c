@@ -365,6 +365,7 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
 	
 	instantBombe = (int)SDL_GetTicks();
+	printf("\nInstant : %d\n", instantBombe);
 	ajouterBombeFin(bombesPosees, instantBombe, repereBombe, joueur->puissanceBombe, joueur);
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
@@ -394,7 +395,7 @@ void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, L
 		/* On ajoute une bombe explosée pour ensuite pour ensuite exploiter
 		 * ses données + on récupère cette bombe */
 			
-	determinerPortee(carte, bombeExplosee);
+	determinerPortee(carte, bombeExplosee, bombesPosees);
 	afficherExplosion(carte, bombeExplosee, FLAMME);
 	
 	supprimerBombe(bombesPosees, 0);
@@ -407,120 +408,97 @@ void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, L
 
 void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees)
 {
-	int i = 0, bool[4] = {1, 1, 1, 1};
+	int i = 0, k=0, bool[4] = {1, 1, 1, 1}, flamme = 0;
 		// bool sert à indiquer le moment où on arrête de vérifier la portée de la bombe à une direction donnée
-	Position posBombe, posBombePassage;
-	Maillon *bombePassage = NULL; // Quand je vais vérifier dans les 4 directions il m'en faudrait 4 !!
+	Position posBombe, posFlamme[4];
+	
 	
 	posBombe.x = bombeExplosee->position.x;
 	posBombe.y = bombeExplosee->position.y;
 	
 	for(i=1; i<=bombeExplosee->puissance; i++)
 	{
-		// EN HAUT
-		if(posBombe.y >= i && bool[HAUT]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion, on peut vérifier la case suivante
+		/* ICI JE VAIS FAIRE UN TRUC DE OUF:
+		 * UNE SEULE BOUCLE DE 0 A 4, JE DEFINIS POSFLAMME, JE VERIFIE CE QU'IL Y A
+		 * DANS LA FLAMME ET EN FONCTION JE FAIS CE QU'IL Y A A FAIRE
+		 */
+		 
+		posFlamme[HAUT].x = posBombe.x;
+		posFlamme[HAUT].y = posBombe.y - i;
+		posFlamme[BAS].x = posBombe.x;
+		posFlamme[BAS].y = posBombe.y + i;
+		posFlamme[GAUCHE].x = posBombe.x - i;
+		posFlamme[GAUCHE].y = posBombe.y;
+		posFlamme[DROITE].x = posBombe.x + i;
+		posFlamme[DROITE].y = posBombe.y;
+		
+		for(k=0; k<4; k++) // Chaque direction est vérifiée
 		{
-			if(carte[posBombe.y - i][posBombe.x] == VIDE ||
-				carte[posBombe.y - i][posBombe.x] == FLAMME ||
-				carte[posBombe.y - i][posBombe.x] == BOMBE)
+			if(bool[k]) // Si la flamme peut parcourir dans la direction k
 			{
-				bombeExplosee->portee[HAUT]++;
+				flamme = verifierFlamme(carte, posFlamme[k]);
 				
-				// EN TRAVAUX
-				
-				/*
-				if(carte[posBombe.y - i][posBombe.x] == BOMBE) // Elle rencontre une bombe sur son chemin : on la fait exploser
+				if(flamme == 1) // La flamme peut continuer à parcourir
 				{
-					posBombePassage.x posBombe.x;
-					posBombePassage.y = posBombe.y - i;
-					bombePassage = chercherBombe(posBombePassage, bombesPosees);
+					bombeExplosee->portee[k]++;
 					
-					bombePassage->instant = SDL_GetTicks() + DELAI_BOMBE;
+					if(carte[posFlamme[k].y][posFlamme[k].x] == BOMBE)
+						// Si la flamme rencontre une bombe elle entraîne son explosion
+					{
+						entrainerExplosion(bombesPosees, posFlamme[k]);
+					}
 				}
-				*/
-			}
-			else if(carte[posBombe.y - i][posBombe.x] == BRIQUE)
-			{
-				bombeExplosee->brique[HAUT].bool = 1;
-				bombeExplosee->brique[HAUT].position.x = posBombe.x;
-				bombeExplosee->brique[HAUT].position.y = posBombe.y - i;
-				bool[HAUT] = 0;
-			}
-			else
-			{
-				bool[HAUT] = 0; // On arrête de vérifier cette direction
-			}
-		}
-		
-		// EN BAS
-		if(posBombe.y + i <= NB_CASES-1 && bool[BAS]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
-		{
-			if(carte[posBombe.y + i][posBombe.x] == VIDE ||
-				carte[posBombe.y + i][posBombe.x] == FLAMME ||
-				carte[posBombe.y + i][posBombe.x] == BOMBE)
-			{
-				bombeExplosee->portee[BAS]++;
-			}
-			else if(carte[posBombe.y + i][posBombe.x] == BRIQUE)
-			{
-				bombeExplosee->brique[BAS].bool = 1;
-				bombeExplosee->brique[BAS].position.x = posBombe.x;
-				bombeExplosee->brique[BAS].position.y = posBombe.y + i;
-				bool[BAS] = 0;
-			}
-			else
-			{
-				bool[BAS] = 0; // On arrête de vérifier cette direction
-			}
-		}
-		
-		
-		// A GAUCHE
-		if(posBombe.x >= i && bool[GAUCHE]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
-		{
-			if(carte[posBombe.y][posBombe.x - i] == VIDE ||
-				carte[posBombe.y][posBombe.x - i] == FLAMME ||
-				carte[posBombe.y][posBombe.x - i] == BOMBE)
-			{
-				bombeExplosee->portee[GAUCHE]++;
-			}
-			else if(carte[posBombe.y][posBombe.x - i] == BRIQUE)
-			{
-				bombeExplosee->brique[GAUCHE].bool = 1;
-				bombeExplosee->brique[GAUCHE].position.x = posBombe.x - i;
-				bombeExplosee->brique[GAUCHE].position.y = posBombe.y;
-				bool[GAUCHE] = 0;
-			}
-			else
-			{
-				bool[GAUCHE] = 0; // On arrête de vérifier cette direction
-			}
-		}
-		
-		// A DROITE
-		if(posBombe.x + i <= NB_CASES-1 && bool[DROITE]) // Si la bombe n'est pas au bord de la map et qu'elle peut continuer son explosion
-		{
-			if(carte[posBombe.y][posBombe.x + i] == VIDE ||
-				carte[posBombe.y][posBombe.x + i] == FLAMME ||
-				carte[posBombe.y][posBombe.x + i] == BOMBE)
-			{
-				bombeExplosee->portee[DROITE]++;
-			}
-			else if(carte[posBombe.y][posBombe.x + i] == BRIQUE)
-			{
-				bombeExplosee->brique[DROITE].bool = 1;
-				bombeExplosee->brique[DROITE].position.x = posBombe.x + i;
-				bombeExplosee->brique[DROITE].position.y = posBombe.y;
-				bool[DROITE] = 0;
-			}
-			else
-			{
-				bool[DROITE] = 0; // On arrête de vérifier cette direction
+				
+				else if(flamme == 2) // La flamme rencontre une brique
+				{
+					bombeExplosee->brique[k].bool = 1;
+					bombeExplosee->brique[k].position.x = posFlamme[k].x;
+					bombeExplosee->brique[k].position.y = posFlamme[k].y;
+					bool[k] = 0; // La flamme s'arrête de parcourir
+				}
+				
+				else // Si la flamme rencontre autre chose
+				{
+					bool[k] = 0; // La flamme s'arrête de parcourir
+				}
 			}
 		}
 	}
 	
 	return;
+}
+
+
+
+/* Vérifie le parcours de la flamme de la bombe
+ * Retourne 1 : la flamme peut continuer à parcourir la map
+ * Retourne 2 : la flamme a rencontré une brique
+ * Retourne 0 : elle doit s'arrêter
+ */
+int verifierFlamme(int carte[][NB_CASES], Position posFlamme)
+{
+	int valeur = 0;
+	
+	if(posFlamme.y >= 0 && posFlamme.y <= NB_CASES-1 &&
+		posFlamme.x >= 0 && posFlamme.x <= NB_CASES-1)
+	{
+		if(carte[posFlamme.y][posFlamme.x] == VIDE ||
+			carte[posFlamme.y][posFlamme.x] == FLAMME ||
+			carte[posFlamme.y][posFlamme.x] == BOMBE)
+		{
+			valeur = 1;
+		}
+		else if(carte[posFlamme.y][posFlamme.x] == BRIQUE)
+		{
+			valeur = 2;
+		}
+		else
+		{
+			valeur = 0;
+		}
+	}
+	
+	return valeur;
 }
 
 
@@ -588,18 +566,24 @@ void casserBrique(Maillon *bombe, int carte[][NB_CASES])
 	return;
 }
 
-// Recherche une bombe dans la liste des bombes posées à partir de ses positions
-Maillon *chercherBombe(Position posBombe, Liste *bombesPosees)
+
+void entrainerExplosion(Liste *liste, Position posFlamme)
 {
+	int rang = 0;
+	Maillon *bombePassage = NULL;
 	
-	Maillon *courant = liste->premier;
-	int i = 0;
 	
-	while( (courant->position.x != posBombe.x || courant->position.y != posBombe.y) &&  i < liste->taille)
+	bombePassage = chercherBombe(posFlamme, liste, &rang);
+	bombePassage->instant = (int)0-DELAI_BOMBE;
+		// On fait en sorte que son délai soit déjà passé pour qu'elle pète
+		
+	if(rang > 1)
 	{
-		courant = courant->suivant;
-		i++;
+		deplacerElement(liste, rang, 1);
 	}
 	
-	return courant;
+	return;
 }
+
+
+

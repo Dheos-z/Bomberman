@@ -46,8 +46,10 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);
 void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees);
 void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees);
+int verifierFlamme(int carte[][NB_CASES], Position posFlamme);
 void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
 void casserBrique(Maillon *bombe, int carte[][NB_CASES]);
-Maillon *chercherBombe(Position posBombe, Liste *bombesPosees);
+void entrainerExplosion(Liste *liste, Position posFlamme);
+
 
 #endif

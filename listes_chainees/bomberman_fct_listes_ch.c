@@ -194,3 +194,139 @@ Maillon *recupererElement(Liste *liste, int rang)
 	
 	return courant;
 }
+
+
+void deplacerElement(Liste *liste, int rangDepart, int rangArrivee)
+{
+	int i=0, rangSup = rangDepart;
+	Maillon *courant=liste->premier, *m = NULL, *mPlus1 = NULL, *n = NULL, *nPlus1 = NULL;
+	
+	
+	if(rangDepart < 0 || rangArrivee < 0 || rangDepart >= liste->taille || rangArrivee >= liste->taille || liste->taille < 2 || rangDepart == rangArrivee)
+	{
+		printf("Erreur : operation impossible\n");
+		return;
+	}
+	
+	// Définition du plus grand rang
+	if(rangDepart < rangArrivee)
+	{
+		rangSup = rangArrivee;
+	}
+	
+	// Mémorisation des éléments indispensables
+	
+	while(i <= rangSup)
+	{
+		if(!rangArrivee && i == rangArrivee)
+		{
+			m = liste->premier;
+			
+			// Cas particulier où rangArr = 0 et rangDep = 1
+			if(i == rangDepart-1)
+			{
+				n = courant->suivant;
+				nPlus1 = courant->suivant->suivant;
+			}
+		}
+		else if(i == rangArrivee-1 && i != rangDepart)
+		{
+			m = courant->suivant;
+		}
+		
+		else if(i == rangArrivee && rangDepart < rangArrivee)
+		{
+			mPlus1 = courant->suivant;
+		}
+		
+		else if(!rangDepart && i == rangDepart)
+		{
+			n = courant;
+			nPlus1 = courant->suivant;
+		}
+		
+		else if(rangDepart && i == rangDepart-1)
+		{
+			n = courant->suivant;
+			nPlus1 = courant->suivant->suivant;
+		}
+		
+		i++;
+		courant = courant->suivant;
+	}
+	
+	// Parcours et modification de l'ordre de la liste
+		
+	i=0;
+	courant=liste->premier;
+		
+	while(i <= rangSup)
+	{
+		if(rangArrivee && i == rangArrivee-1 && rangDepart) // rangArrivee doit être non nul
+		{
+			courant->suivant = n;
+			if(rangDepart > rangArrivee)
+			{
+				courant->suivant->suivant = m;
+				rangDepart++;
+			}
+			else if(rangDepart < rangArrivee)
+			{
+				courant->suivant->suivant = mPlus1;
+			}
+		}
+		
+		else if(rangDepart && i == rangDepart-1 && i != rangArrivee) // rangDepart doit être non nul
+		{
+			courant->suivant = nPlus1;
+		}
+		
+		// Si rangArrivee ou rangDepart est nul : petites manips
+		else if(!rangDepart && i == rangDepart)
+		{
+			liste->premier = nPlus1;
+			courant = liste->premier; // Actualisation du premier
+			if(i == rangArrivee-1) // Cas exceptionnel où rangDep = 0 ET rangArr = 1
+			{
+				courant->suivant = n;
+				courant->suivant->suivant = mPlus1;
+			}
+		}
+		
+		else if(!rangArrivee && i == rangArrivee)
+		{
+			liste->premier = n;
+			liste->premier->suivant = m;
+			courant = liste->premier; // Actualisation du premier
+			rangDepart++;
+		}
+		
+		i++;
+		courant = courant->suivant;
+	}
+	
+	return;
+}
+
+
+// Recherche une bombe dans la liste des bombes posées à partir de ses positions
+Maillon *chercherBombe(Position posBombe, Liste *liste, int *rang)
+{
+	
+	Maillon *courant = liste->premier;
+	int i = 0;
+	
+	while( (courant->position.x != posBombe.x || courant->position.y != posBombe.y) &&  i < liste->taille)
+	{
+		courant = courant->suivant;
+		i++;
+		
+		if(courant->position.x == posBombe.x && courant->position.y == posBombe.y)
+		{
+			printf("\nC'est trouve !!! Position : %d\n", i);
+		}
+	}
+	
+	*rang = i;
+	return courant;
+}

@@ -29,5 +29,7 @@ void ajouterMaillonDebut(Liste *liste, int nombre);
 void ajouterMaillonMilieu(Liste *liste, int nombre, int indice);
 int supprimerBombe(Liste *liste, int rang);
 Maillon *recupererElement(Liste *liste, int rang);
+void deplacerElement(Liste *liste, int rangDepart, int rangArrivee);
+Maillon *chercherBombe(Position posBombe, Liste *liste, int *rang);
 
 #endif

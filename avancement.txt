@@ -34,49 +34,14 @@ fonction poserBombe().
 1) On vérifie à la fin de la boucle des événements si la première
 bombe posée par chaque joueur peut exploser, dans verifierDelai().
 
-Si la fn renvoie 1, on fait exploser la bombe grâce à exploserBombe().
-
-
-grâce à supprimerBombe() :
-- Décrémentation de listeBombe->taille
-- Incrémentation de bombesRestantes
-- Détermination de la portée de la bombe dans determinerPortee()
-- Ajout d'une bombe explosée dans la liste bombesExplosées
-  afin de traiter plus tard le délai de présence des flammes sur
-  sur la carte
-- Affichage de l'explosion dans afficherExplosion() 
-
-
-
-
+Si la fn renvoie 1, on fait exploser la bombe grâce à exploserBombe():
+Ajout de la bombe explosée dans la liste bombesExplosees et parallèlement
+suppression de la bombe de la liste bombesPosees. 
+Détermination de la portée de la bombe dans determinerPortee()  puis
+affichage de l'explosion sur la carte grâce à afficherExplosion().
 
 
 * Affichage de l'explosion :
-
-D'abord on doit définir sa portée dans les 4 directions.
-Ca va se faire dans determinerPortee() :
-
-for(i=1; i<=puissanceBombe; i++)
-{
-	// HAUT :
-	if(posB.y >= i && carte[posB.y - i][posB.x] == VIDE ou FLAMME
-		       && bool[HAUT])
-		portee[HAUT]++;
-	else
-		bool[HAUT] = 0;
-
-	// Pareil pour les 3 autres directions
-}
-
-
-A partir de là, on a la portée de la bombe dans les 4 directions, 
-regroupée dans un tableau portee. On part de la position de cette
-bombe et on inscrit dans la carte 2D des flammes dans les 4 directions
-de cette bombe selon la portée. 
-Cela se fera dans afficherExplosion().
-L'explosion est graphiquement représentée.
-Reste à déterminer l'instant où il faut retirer ces flammes et retrouver 
-du vide.
 
 Pour l'affichage de l'explosion, c'est une question 
 de délai (l'explosion doit être visible pendant DELAI_FLAMME millisecondes).
@@ -101,7 +66,12 @@ On note la position de la brique à casser. Dans jouerPartie(), au moment où on
 détermine l'explosion des flammes, on vérifie aussi si des briques doivent
 être cassées dans casserBrique(). Voilà.
 
-Explosion d'une autre bombe sur son passage :
+- Explosion d'une autre bombe sur son passage : 
+Dans determinerPortee(), si la flamme rencontre une bombe, elle détecte sa position
+dans bombesPosees grâce à chercherBombe(). Cette bombe, on change son instant pour faire
+en sorte qu'elle explose quand on la vérifie, et on la positionne au rang 1 dans
+bombesPosees pour que ce soit la prochaine à être vérifiéen dans entrainerExplosion(). 
+
 Tuer un joueur :
 Brûler des items : ça fonctionne déjà, lorsqu'elle rencontre un item elle
 l'écrase en posant sa FLAMME

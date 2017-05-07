@@ -34,3 +34,35 @@ exploserBombe() :
 
 
 
+determinerPortee() :
+
+On définit un tableau de 4 cases (qui représente les 4 directions).
+Pour chaque direction, on parcoure la map en incrémentant la portée
+dans la direction considérée jusqu'à qu'on rencontre un problème :
+puissance de bombe insuffisante, mur, bord de la map.
+
+
+
+afficherExplosion() :
+
+Parcours de la carte dans les 4 directions en partant de la bombe,
+affichage d'une flamme sur la carte.
+
+
+
+verifierFlamme() :
+
+Vérifie le parcours d'une flamme dans une direction donnée.
+Renvoie des valeurs différentes selon si elle rencontre
+une bombe, une brique, un item, etc.
+
+
+entrainerExplosion() :
+
+Entraîne l'explosion d'une bombe qui s'est retrouvée sur le passage
+d'une flamme. Comment ? On détecte cette bombe grâce aux positions
+de la flamme, on définit son instant à 0-DELAI_BOMBE pour être sûr
+qu'elle explose quand on la vérifie et on la met au rang 1 dans
+bombesPosees pour que ce soit la prochaine bombe qui sera vérifiée.
+
+
