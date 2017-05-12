@@ -323,7 +323,7 @@ Maillon *chercherBombe(Position posBombe, Liste *liste, int *rang)
 		
 		if(courant->position.x == posBombe.x && courant->position.y == posBombe.y)
 		{
-			printf("\nC'est trouve !!! Position : %d\n", i);
+			// printf("\nC'est trouve !!! Position : %d\n", i);
 		}
 	}
 	

@@ -365,7 +365,6 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 	carte[repereBombe.y][repereBombe.x] = BOMBE;
 	
 	instantBombe = (int)SDL_GetTicks();
-	printf("\nInstant : %d\n", instantBombe);
 	ajouterBombeFin(bombesPosees, instantBombe, repereBombe, joueur->puissanceBombe, joueur);
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
