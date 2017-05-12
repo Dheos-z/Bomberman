@@ -65,18 +65,22 @@ int jouerPartie(SDL_Surface* ecran)
 					
 					case SDLK_UP:
 						joueur[0].touche[HAUT] = 1;
+						joueur[0].persoActuel = perso[HAUT];
 						break;
 
 					case SDLK_DOWN:
 						joueur[0].touche[BAS] = 1;
+						joueur[0].persoActuel = perso[BAS];
 						break;
 
 					case SDLK_LEFT:
 						joueur[0].touche[GAUCHE] = 1;
+						joueur[0].persoActuel = perso[GAUCHE];
 						break;
 
 					case SDLK_RIGHT:
 						joueur[0].touche[DROITE] = 1;
+						joueur[0].persoActuel = perso[DROITE];
 						break;
 						
 					case SDLK_RCTRL: // Poser une bombe
@@ -93,18 +97,22 @@ int jouerPartie(SDL_Surface* ecran)
 					
 					case SDLK_z:
 						joueur[1].touche[HAUT] = 1;
+						joueur[1].persoActuel = perso[HAUT];
 						break;
 
 					case SDLK_s:
 						joueur[1].touche[BAS] = 1;
+						joueur[1].persoActuel = perso[BAS];
 						break;
 
 					case SDLK_q:
 						joueur[1].touche[GAUCHE] = 1;
+						joueur[1].persoActuel = perso[GAUCHE];
 						break;
 
 					case SDLK_d:
 						joueur[1].touche[DROITE] = 1;
+						joueur[1].persoActuel = perso[DROITE];
 						break;
 				}	
 				break;
@@ -358,7 +366,7 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 	int instantBombe = 0;
 	
 	repereBombe.x = (joueur->position.x + T_PERSO/2)/CASE;
-	repereBombe.y = (joueur->position.y + T_PERSO - 1)/CASE;
+	repereBombe.y = (joueur->position.y + T_PERSO - 5)/CASE;
 	// Indique où est-ce que la bombe doit être posée dans la carte de jeu
 	// repereBombe pile entre les 2 pieds du personnage, c'est le repère pour poser la bombe
 	
