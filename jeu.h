@@ -10,10 +10,13 @@ struct Position
 };
 typedef struct Position Position;
 
+
 struct Entite
 {
 	Position position;
-	char bool; // Booléenne qui indique si la bombe explosée a cassé une brique
+	
+	char bool; // Quand l'entité est une brique : booléenne qui indique si la bombe explosée a cassé une brique
+	
 };
 typedef struct Entite Entite;
 
@@ -21,14 +24,17 @@ struct Perso
 {
 	SDL_Surface *persoActuel; // Le skin du perso selon la direction dans laquelle il va
 	SDL_Rect position;
+	SDL_Rect hitbox;
+	
 	int touche[4]; // Tableau de booléennes qui indiquent si la touche correspondante est appuyée
-	int bombePosee; // Booléenne qui indique si la touche de pose de bombe
-					// est actuellement appuyée
+	int bombePosee; // Booléenne qui indique si la touche de pose de bombe est actuellement appuyée
+	
 	int totalBombes;
 	int bombesRestantes;
 	int puissanceBombe;
 };
 typedef struct Perso Perso;
+
 
 #include "listes_chainees/bomberman_fct_listes_ch.h"
 

@@ -65,22 +65,22 @@ int jouerPartie(SDL_Surface* ecran)
 					
 					case SDLK_UP:
 						joueur[0].touche[HAUT] = 1;
-						joueur[0].persoActuel = perso[HAUT];
+						//joueur[0].persoActuel = perso[HAUT];
 						break;
 
 					case SDLK_DOWN:
 						joueur[0].touche[BAS] = 1;
-						joueur[0].persoActuel = perso[BAS];
+						//joueur[0].persoActuel = perso[BAS];
 						break;
 
 					case SDLK_LEFT:
 						joueur[0].touche[GAUCHE] = 1;
-						joueur[0].persoActuel = perso[GAUCHE];
+						//joueur[0].persoActuel = perso[GAUCHE];
 						break;
 
 					case SDLK_RIGHT:
 						joueur[0].touche[DROITE] = 1;
-						joueur[0].persoActuel = perso[DROITE];
+						//joueur[0].persoActuel = perso[DROITE];
 						break;
 						
 					case SDLK_RCTRL: // Poser une bombe
@@ -324,16 +324,16 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 		switch(i)
 		{
 			case HAUT:
-				joueur->position.y -= VITESSE;
+				joueur->hitbox.y -= VITESSE;
 				break;
 			case BAS:
-				joueur->position.y += VITESSE;
+				joueur->hitbox.y += VITESSE;
 				break;
 			case GAUCHE:
-				joueur->position.x -= VITESSE;
+				joueur->hitbox.x -= VITESSE;
 				break;
 			case DROITE:
-				joueur->position.x += VITESSE;
+				joueur->hitbox.x += VITESSE;
 				break;
 				
 			/*case HAUT:
@@ -353,6 +353,10 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 				joueur->position.x += VITESSE;
 				break;*/
 		}
+		
+		// Redéfinition de la position de l'image du joueur grâce à la hitbox
+		joueur->position.x = joueur->hitbox.x;
+		joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h;
 	}
 	
 	return;
@@ -365,8 +369,8 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 	Position repereBombe;
 	int instantBombe = 0;
 	
-	repereBombe.x = (joueur->position.x + T_PERSO/2)/CASE;
-	repereBombe.y = (joueur->position.y + T_PERSO - 5)/CASE;
+	repereBombe.x = (joueur->hitbox.x + (joueur->hitbox.w)/2)/CASE;
+	repereBombe.y = (joueur->hitbox.y + joueur->hitbox.h)/CASE;
 	// Indique où est-ce que la bombe doit être posée dans la carte de jeu
 	// repereBombe pile entre les 2 pieds du personnage, c'est le repère pour poser la bombe
 	
@@ -591,6 +595,4 @@ void entrainerExplosion(Liste *liste, Position posFlamme)
 	
 	return;
 }
-
-
 

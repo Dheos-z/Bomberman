@@ -1,13 +1,16 @@
-/* 7/5/17
+/* 16/5/17
  * 
  * Fait : 
- * Entraînement de l'explosion d'une autre bombe sur le passage d'une flamme.
+ * Définition de la hitbox pour chaque joueur
+ * Maintenant la pose de bombe et le déplacement du joueur se font grâce à la hitbox
+ * Fait l'image bomberman bas avec les bonnes dimensions
  * 
  * A faire : 
- * - Effets de l'explosion : si du feu touche une bombe ça la fait exploser,
- * si du feu touche une brique ça la casse, si ça touche un joueur le perso meurt, si ça touche
+ * - Si une flamme touche un joueur le perso meurt, si ça touche
  * un item ça le brûle
- * 
+ * J'ai déjà défini comment faire pour la mort du perso dans avancement.txt
+ * - Refaire les images (persos, items, flammes etc) avec les bonnes 
+ * dimensions et la transparence (pour la transparence, leur donner un fond jaune)
  * 
  * 
  * 

@@ -72,6 +72,14 @@ dans bombesPosees grâce à chercherBombe(). Cette bombe, on change son instant 
 en sorte qu'elle explose quand on la vérifie, et on la positionne au rang 1 dans
 bombesPosees pour que ce soit la prochaine à être vérifiéen dans entrainerExplosion(). 
 
+
 Tuer un joueur :
+Idée : On a défini la hitbox. Tant que des flammes sont présentes
+sur le terrain, on définit pour chaque joueur la position sur la
+carte de chacun des coins de la hitbox. Pour chaque coin on regarde
+si, sur la carte, le coin est présent sur une flamme.
+Si oui, le joueur est mort.
+
+
 Brûler des items : ça fonctionne déjà, lorsqu'elle rencontre un item elle
 l'écrase en posant sa FLAMME

@@ -7,6 +7,8 @@
 void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **flamme, 
 					SDL_Surface **itemBombe, SDL_Surface **itemFlamme, SDL_Surface **itemPied, SDL_Surface **itemRoller, SDL_Surface **perso)
 {
+	int i=0;
+	
 	*mur = SDL_LoadBMP("images/MUR.bmp");
 	*brique = SDL_LoadBMP("images/BRIQUE.bmp");
 	*bombe = SDL_LoadBMP("images/BOMBE.bmp");
@@ -16,10 +18,16 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 	*itemPied = SDL_LoadBMP("images/item_pied.bmp");
 	*itemBombe = SDL_LoadBMP("images/item_bombe.bmp");
 	
-	perso[BAS] = SDL_LoadBMP("images/BAS.bmp");
+	perso[BAS] = SDL_LoadBMP("images/perso_bas.bmp");
 	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
 	perso[GAUCHE] = SDL_LoadBMP("images/GAUCHE.bmp");
 	perso[DROITE] = SDL_LoadBMP("images/DROITE.bmp");
+	
+	// On indique que la couleur jaune doit être rendue transparente
+	for(i=0; i<4; i++)
+	{
+		SDL_SetColorKey(perso[i], SDL_SRCCOLORKEY, SDL_MapRGB(perso[i]->format, 255, 255, 0));
+	}
 	
 	return;
 }
@@ -28,9 +36,16 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 {
 	joueur->persoActuel = skinInitial; // On initialise le perso vers une direction
-	joueur->position.x = posX;
-	joueur->position.y = posY;
-		// Positions dans la carte
+	joueur->hitbox.x = posX; // Positions en pixels
+	joueur->hitbox.y = posY;
+	joueur->hitbox.w = joueur->persoActuel->w;
+	joueur->hitbox.h = joueur->hitbox.w;
+
+	joueur->position.x = joueur->hitbox.x;
+	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h;
+	printf("Perso : pos(%d,%d) taille(%d,%d)\nHitbox : pos(%d,%d) taille(%d,%d)\n",
+			joueur->position.x, joueur->position.y, joueur->persoActuel->w, joueur->persoActuel->h,
+			joueur->hitbox.x, joueur->hitbox.y, joueur->hitbox.w, joueur->hitbox.h);
 	
 	joueur->bombePosee = 0;
 	joueur->totalBombes = 10;
