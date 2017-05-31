@@ -1,14 +1,11 @@
 /* 31/5/17
  * 
  * Fait : 
- * Sprites du personnage bas, gauche et droite.
- * Collisions (juste les murs et les briques)
+ * Génération d'items
  * 
  * A faire : 
- * - Si une flamme touche un joueur le perso meurt, si ça touche
- * un item ça le brûle
- * Sprite bomberman haut + enlever l'ombre moche du sprite bomberman bas
- * 
+ * - Si une flamme touche un joueur le perso meurt (voir verifierCollision() )
+ * - enlever l'ombre moche du sprite bomberman bas
  * 
  * 
  * Zak

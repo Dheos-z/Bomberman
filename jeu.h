@@ -50,7 +50,7 @@ void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur
 void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
 void afficherCarte(int carte[][NB_CASES]);
 int chercherDirection(int touche[]);
-int verifierCollision(Perso joueur, int direction, int carte[][NB_CASES]);
+int verifierDeplacement(Perso joueur, int direction, int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur, int direction);
 void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);
@@ -58,7 +58,7 @@ void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, L
 void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees);
 int verifierFlamme(int carte[][NB_CASES], Position posFlamme);
 void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
-void casserBrique(Maillon *bombe, int carte[][NB_CASES]);
+void casserEntite(Maillon *bombe, int carte[][NB_CASES], Liste *items);
 void entrainerExplosion(Liste *liste, Position posFlamme);
 
 

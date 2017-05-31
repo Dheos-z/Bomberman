@@ -1,6 +1,6 @@
 
 /* Dans le cadre de notre jeu, les fonctions qu'on utilise sont
- * initialiserListe(), afficherListe(), ajouterBombeFin() et supprimerBombe().
+ * initialiserListe(), afficherListe(), ajouterElementFin() et supprimerElement().
  * On a modifié les fonctions de base pour qu'elles correspondent bien à ce
  * qu'on veut faire dans le jeu.
  */
@@ -24,6 +24,7 @@ Liste* initialiserListe()
 
 	liste->premier = NULL;
 	liste->taille = 0;
+	liste->nbItemsSurTerrain = 0;
 
 	return liste;
 }
@@ -49,7 +50,7 @@ void afficherListe(Liste *liste)
 
 
 // Ajouter une bombe à la fin de la liste
-Maillon *ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur)
+Maillon *ajouterElementFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur)
 {
 	Maillon *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Maillon));
 	int i = 0;
@@ -73,7 +74,10 @@ Maillon *ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int 
 	nouveau->position.x = posBombe.x;
 	nouveau->position.y = posBombe.y;
 	nouveau->puissance = puissanceBombe;
-	nouveau->joueur = joueur;
+	if(joueur != NULL)
+	{
+		nouveau->joueur = joueur;
+	}
 	
 	nouveau->suivant = NULL;
 	liste->taille++;
@@ -81,9 +85,9 @@ Maillon *ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int 
 	// Initialisations
 	for(i=0; i<4; i++) 
 	{
-		nouveau->brique[i].bool = 0;
-		nouveau->brique[i].position.x = 0;
-		nouveau->brique[i].position.y = 0;
+		nouveau->entite[i].bool = 0;
+		nouveau->entite[i].position.x = 0;
+		nouveau->entite[i].position.y = 0;
 		nouveau->portee[i] = 0;
 	}
 
@@ -135,7 +139,7 @@ void ajouterMaillonMilieu(Liste *liste, int nombre, int indice)
 }
 
 
-int supprimerBombe(Liste *liste, int rang)
+int supprimerElement(Liste *liste, int rang)
 {
 	int i = 0;
 	Maillon *precedentFinal = liste->premier, *suivantFinal = NULL, *maillonAsupprimer = NULL;
@@ -309,24 +313,27 @@ void deplacerElement(Liste *liste, int rangDepart, int rangArrivee)
 }
 
 
-// Recherche une bombe dans la liste des bombes posées à partir de ses positions
-Maillon *chercherBombe(Position posBombe, Liste *liste, int *rang)
+// Recherche un élément dans la liste à partir de ses positions
+Maillon *chercherElement(Position pos, Liste *liste, int *rang)
 {
-	
-	Maillon *courant = liste->premier;
+	Maillon *courant = NULL;
 	int i = 0;
 	
-	while( (courant->position.x != posBombe.x || courant->position.y != posBombe.y) &&  i < liste->taille)
+	if(liste->taille)
 	{
-		courant = courant->suivant;
-		i++;
-		
-		if(courant->position.x == posBombe.x && courant->position.y == posBombe.y)
+		courant = liste->premier;
+	
+		while(i < liste->taille && (courant->position.x != pos.x || courant->position.y != pos.y))
 		{
-			// printf("\nC'est trouve !!! Position : %d\n", i);
+			courant = courant->suivant;
+			i++;
 		}
 	}
 	
-	*rang = i;
+	if(rang != NULL)
+	{
+		*rang = i;
+	}
+
 	return courant;
 }

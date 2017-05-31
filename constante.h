@@ -45,12 +45,22 @@ typedef struct Objet Objet;
 #define GAUCHE 2
 #define DROITE 3
 
+	// Haut-Gauche, Haut-Droite, Bas-Droite et Bas-Gauche (pour les coins de la hitbox)
+#define HG 0
+#define HD 1
+#define BD 2
+#define BG 3
+
 // AUTRES
 
 #define VITESSE 2
 #define MAX 100
 #define DELAI_BOMBE 2000 // En millisecondes
 #define DELAI_FLAMMES 800
-
+#define NB_ITEM_FLAMME 3
+#define NB_ITEM_BOMBE 3
+#define NB_ITEM_ROLLER 1
+#define NB_ITEM_PIED 0
+#define NB_ITEMS NB_ITEM_BOMBE+NB_ITEM_FLAMME+NB_ITEM_PIED+NB_ITEM_ROLLER
 
 #endif 

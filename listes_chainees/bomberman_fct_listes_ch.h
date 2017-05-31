@@ -11,8 +11,9 @@ struct Maillon
 	Perso *joueur; // Le joueur qui a posé cette bombe
 	int portee[4]; /* Portée de la bombe (lorsque le maillon est une bombe) dans
 						les 4 directions (à définir au moment où elle explose) */
-	Entite brique[4]; // Pour chaque direction, indique si la brique peut se casser et à quelle position
+	Entite entite[4]; // Pour chaque direction, indique si l'entité (brique ou item) peut se casser et à quelle position
 	Maillon *suivant;
+	int type; // Dans le cas où l'élément est un item : type de l'item
 };
 
 typedef struct Liste Liste;
@@ -20,16 +21,17 @@ struct Liste
 {
     int taille;
 	Maillon *premier;
+	int nbItemsSurTerrain; // On l'utilise dans le cas d'une liste d'items
 };
 
 Liste* initialiserListe();
 void afficherListe(Liste *liste);
-Maillon *ajouterBombeFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur);
+Maillon *ajouterElementFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur);
 void ajouterMaillonDebut(Liste *liste, int nombre);
 void ajouterMaillonMilieu(Liste *liste, int nombre, int indice);
-int supprimerBombe(Liste *liste, int rang);
+int supprimerElement(Liste *liste, int rang);
 Maillon *recupererElement(Liste *liste, int rang);
 void deplacerElement(Liste *liste, int rangDepart, int rangArrivee);
-Maillon *chercherBombe(Position posBombe, Liste *liste, int *rang);
+Maillon *chercherElement(Position posBombe, Liste *liste, int *rang);
 
 #endif

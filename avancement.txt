@@ -106,3 +106,37 @@ Si le joueur a le droit de se déplacer dans la direction
 demandée, on fait avancer la hitbox de tant de pixels selon la
 vitesse du perso, et on redéfinit les positions sur la carte
 de chaque coin de la hitbox. Voilà.
+
+
+
+* LES ITEMS
+
+- Génération d'items
+
+On choisit de répartir n items sur la carte, dans des briques.
+On génère aléatoirement n positions, en vérifiant que des
+briques sont situées à ces positions (sinon on recommence),
+dans une liste chaînée d'items. Chaque case de la liste contient
+les positions de l'item et son type (roller, flamme, bombe etc).
+
+Au moment du cassage d'une brique (voir où ça se trouve),
+au lieu de remplacer cette brique par du vide, on parcoure la
+liste pour vérifier si cette brique est à la même position
+qu'un item. Si oui, on remplace la brique par cet item.
+
+
+- Prendre un item
+
+Dans vérifierCollision(), lorsqu'au moins un item est présent
+sur le terrain, on regarde les positions des 4 coins de
+chaque joueur. Si un des coins est positionné sur un item,
+alors selon l'item on lui attribue le boost récupéré.
+Comment savoir si un item est présent sur le terrain ?
+A chaque fois qu'un item est découvert par une brique,
+on incrémente la classe nbItemsSurTerrain située dans la
+variable qui est le nom de la liste (la variable qui
+permet d'accéder aux éléments de la liste).
+Du coup tant que nbItemsSurTerrain est non nul, on vérifie les
+coins des joueurs.
+
+

@@ -19,7 +19,7 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 	*itemBombe = SDL_LoadBMP("images/item_bombe.bmp");
 	
 	perso[BAS] = SDL_LoadBMP("images/perso_bas.bmp");
-	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
+	perso[HAUT] = SDL_LoadBMP("images/perso_haut.bmp");
 	perso[GAUCHE] = SDL_LoadBMP("images/perso_gauche.bmp");
 	perso[DROITE] = SDL_LoadBMP("images/perso_droite.bmp");
 	
@@ -52,6 +52,15 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	joueur->bombesRestantes = joueur[0].totalBombes;
 	joueur->puissanceBombe = 3;
 	joueur->vitesse = VITESSE;
+	
+	joueur->coin[HG].x = joueur->hitbox.x;
+	joueur->coin[HG].y = joueur->hitbox.y;
+	joueur->coin[HD].x = joueur->hitbox.x + joueur->hitbox.w;
+	joueur->coin[HD].y = joueur->hitbox.y;
+	joueur->coin[BD].x = joueur->hitbox.x + joueur->hitbox.w;
+	joueur->coin[BD].y = joueur->hitbox.y + joueur->hitbox.h;
+	joueur->coin[BG].x = joueur->hitbox.x;
+	joueur->coin[BG].y = joueur->hitbox.y + joueur->hitbox.h;
 	
 	return;
 }
@@ -100,3 +109,39 @@ int lireFichier(int carte[][NB_CASES])
 	
 	return 0;
 }
+
+
+void genererItems(Liste *items, int carte[][NB_CASES])
+{
+	int i=0, itemCourant = ITEM_FLAMME, bool[4]={1}, k=1;
+	Position pos;
+	Maillon *item = NULL;
+	
+	
+	for(i=0; i<NB_ITEMS; i++)
+	{
+		do
+		{
+			pos.x = rand()%(NB_CASES-1) + 1; // Génère une position entre 1 et NB_CASES-1
+			pos.y = rand()%(NB_CASES-1) + 1;
+			
+		}while(carte[pos.y][pos.x] != BRIQUE || chercherElement(pos, items, NULL) != NULL);
+		
+		item = ajouterElementFin(items, 0, pos, 0, NULL);
+		item->type = itemCourant;
+		
+		printf("(%d,%d)\n", pos.x, pos.y);
+		
+		// Système qui permet de définir quand est-ce qu'on doit changer d'item à placer
+		if(i+1 == bool[0]*NB_ITEM_FLAMME + bool[1]*NB_ITEM_BOMBE + bool[2]*NB_ITEM_ROLLER + bool[3]*NB_ITEM_PIED)
+		{
+			itemCourant++;
+			bool[k]=1;
+			k++;
+		}
+	}
+	
+	
+	return;
+}
+
