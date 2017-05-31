@@ -47,7 +47,7 @@ typedef struct Objet Objet;
 
 // AUTRES
 
-#define VITESSE 5
+#define VITESSE 2
 #define MAX 100
 #define DELAI_BOMBE 2000 // En millisecondes
 #define DELAI_FLAMMES 800

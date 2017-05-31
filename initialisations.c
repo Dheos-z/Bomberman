@@ -20,8 +20,8 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 	
 	perso[BAS] = SDL_LoadBMP("images/perso_bas.bmp");
 	perso[HAUT] = SDL_LoadBMP("images/HAUT.bmp");
-	perso[GAUCHE] = SDL_LoadBMP("images/GAUCHE.bmp");
-	perso[DROITE] = SDL_LoadBMP("images/DROITE.bmp");
+	perso[GAUCHE] = SDL_LoadBMP("images/perso_gauche.bmp");
+	perso[DROITE] = SDL_LoadBMP("images/perso_droite.bmp");
 	
 	// On indique que la couleur jaune doit être rendue transparente
 	for(i=0; i<4; i++)
@@ -38,19 +38,20 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	joueur->persoActuel = skinInitial; // On initialise le perso vers une direction
 	joueur->hitbox.x = posX; // Positions en pixels
 	joueur->hitbox.y = posY;
-	joueur->hitbox.w = joueur->persoActuel->w;
-	joueur->hitbox.h = joueur->hitbox.w;
+	joueur->hitbox.w = joueur->persoActuel->w - 10;
+	joueur->hitbox.h = joueur->hitbox.w + 5;
 
-	joueur->position.x = joueur->hitbox.x;
-	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h;
-	printf("Perso : pos(%d,%d) taille(%d,%d)\nHitbox : pos(%d,%d) taille(%d,%d)\n",
+	joueur->position.x = joueur->hitbox.x - 4;
+	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h + 2;
+	/*printf("Perso : pos(%d,%d) taille(%d,%d)\nHitbox : pos(%d,%d) taille(%d,%d)\n",
 			joueur->position.x, joueur->position.y, joueur->persoActuel->w, joueur->persoActuel->h,
-			joueur->hitbox.x, joueur->hitbox.y, joueur->hitbox.w, joueur->hitbox.h);
+			joueur->hitbox.x, joueur->hitbox.y, joueur->hitbox.w, joueur->hitbox.h);*/
 	
 	joueur->bombePosee = 0;
 	joueur->totalBombes = 10;
 	joueur->bombesRestantes = joueur[0].totalBombes;
 	joueur->puissanceBombe = 3;
+	joueur->vitesse = VITESSE;
 	
 	return;
 }

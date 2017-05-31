@@ -1,16 +1,13 @@
-/* 16/5/17
+/* 31/5/17
  * 
  * Fait : 
- * Définition de la hitbox pour chaque joueur
- * Maintenant la pose de bombe et le déplacement du joueur se font grâce à la hitbox
- * Fait l'image bomberman bas avec les bonnes dimensions
+ * Sprites du personnage bas, gauche et droite.
+ * Collisions (juste les murs et les briques)
  * 
  * A faire : 
  * - Si une flamme touche un joueur le perso meurt, si ça touche
  * un item ça le brûle
- * J'ai déjà défini comment faire pour la mort du perso dans avancement.txt
- * - Refaire les images (persos, items, flammes etc) avec les bonnes 
- * dimensions et la transparence (pour la transparence, leur donner un fond jaune)
+ * Sprite bomberman haut + enlever l'ombre moche du sprite bomberman bas
  * 
  * 
  * 

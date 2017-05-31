@@ -16,7 +16,7 @@ int jouerPartie(SDL_Surface* ecran)
 				*itemPied = NULL, *itemRoller = NULL;
 	SDL_Surface *perso[4] = {NULL};
 	Perso joueur[4];
-	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0};
+	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0}, direction = 0;
 	Uint32 tempsActuel = 0;
 	Liste *bombesPosees = initialiserListe(), *bombesExplosees = initialiserListe();
 		
@@ -70,17 +70,17 @@ int jouerPartie(SDL_Surface* ecran)
 
 					case SDLK_DOWN:
 						joueur[0].touche[BAS] = 1;
-						//joueur[0].persoActuel = perso[BAS];
+						joueur[0].persoActuel = perso[BAS];
 						break;
 
 					case SDLK_LEFT:
 						joueur[0].touche[GAUCHE] = 1;
-						//joueur[0].persoActuel = perso[GAUCHE];
+						joueur[0].persoActuel = perso[GAUCHE];
 						break;
 
 					case SDLK_RIGHT:
 						joueur[0].touche[DROITE] = 1;
-						//joueur[0].persoActuel = perso[DROITE];
+						joueur[0].persoActuel = perso[DROITE];
 						break;
 						
 					case SDLK_RCTRL: // Poser une bombe
@@ -114,6 +114,16 @@ int jouerPartie(SDL_Surface* ecran)
 						joueur[1].touche[DROITE] = 1;
 						joueur[1].persoActuel = perso[DROITE];
 						break;
+						
+					case SDLK_v:
+						if(joueur[1].bombesRestantes && !joueur[1].bombePosee)
+							// Si il lui reste une bombe ET qu'il est pas déjà en train d'appuyer sur la touche
+						{
+							joueur[1].bombePosee = 1;
+								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
+							poserBombe(&joueur[1], bombesPosees, carte);
+						}
+						break;
 				}	
 				break;
 				
@@ -123,7 +133,7 @@ int jouerPartie(SDL_Surface* ecran)
 				
 				switch(event.key.keysym.sym)
 				{
-					// TOUCHES PERSO 0
+					// TOUCHES JOUEUR 0
 					
 					case SDLK_UP:
 						joueur[0].touche[HAUT] = 0;
@@ -145,7 +155,7 @@ int jouerPartie(SDL_Surface* ecran)
 						joueur[0].bombePosee = 0;
 						break;
 						
-					// TOUCHES PERSO 1
+					// TOUCHES JOUEUR 1
 					
 					case SDLK_z:
 						joueur[1].touche[HAUT] = 0;
@@ -162,6 +172,10 @@ int jouerPartie(SDL_Surface* ecran)
 					case SDLK_d:
 						joueur[1].touche[DROITE] = 0;
 						break;
+						
+					case SDLK_v:
+						joueur[1].bombePosee = 0;
+						break;
 				}
 				break;		
 		}
@@ -170,7 +184,13 @@ int jouerPartie(SDL_Surface* ecran)
 		
 		for(i=0; i<nbJoueurs; i++)
 		{
-			deplacerJoueur(&joueur[i], carte);
+			direction = chercherDirection(joueur[i].touche);
+			
+			if(direction < 4 /*&& verifierCollision(joueur[i], direction, carte) == VIDE*/) // Si une direction a été détectée
+			{
+				deplacerJoueur(&joueur[i], direction);
+			}
+			
 		}
 		
 		// TRAITEMENT DES BOMBES
@@ -308,33 +328,110 @@ void afficherCarte(int carte[][NB_CASES])
 }
 
 
-void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
+int chercherDirection(int touche[]) // Permet de détecter la direction dans laquelle veut aller le joueur
 {
 	int i=0;
 	
 	// Recherche de la touche appuyée (HAUT, BAS, GAUCHE, DROITE, ou rien)
-	while(i<4 && joueur->touche[i] == 0)
+	while(i<4 && touche[i] == 0)
 	{
 		i++;
 	}
 	
-	// Déplacement du joueur si une touche a été appuyée
-	if(joueur->touche[i])
+	// Si aucune touche n'a été détectée, i vaudra 4
+	return i;
+}
+
+
+
+int verifierCollision(Perso joueur, int direction, int carte[][NB_CASES])
+{
+	Position coin[2];
+	
+	switch(direction)
 	{
-		switch(i)
-		{
-			case HAUT:
-				joueur->hitbox.y -= VITESSE;
-				break;
-			case BAS:
-				joueur->hitbox.y += VITESSE;
-				break;
-			case GAUCHE:
-				joueur->hitbox.x -= VITESSE;
-				break;
-			case DROITE:
-				joueur->hitbox.x += VITESSE;
-				break;
+		case HAUT:
+			
+			if(joueur.hitbox.y >= joueur.vitesse) // Si il ne cherche pas  sortir de la map
+			{
+				coin[0].x = (joueur.hitbox.x)/CASE;
+				coin[0].y = (joueur.hitbox.y-joueur.vitesse)/CASE;
+				coin[1].x = (joueur.hitbox.x + joueur.hitbox.w)/CASE;
+				coin[1].y = (joueur.hitbox.y-joueur.vitesse)/CASE;
+			}
+
+			
+			break;
+			
+		case BAS:
+		
+			if(joueur.hitbox.y + joueur.hitbox.h + joueur.vitesse <= NB_CASES * CASE) // Si il ne cherche pas  sortir de la map
+			{
+				coin[0].x = (joueur.hitbox.x)/CASE;
+				coin[0].y = (joueur.hitbox.y+joueur.hitbox.h+joueur.vitesse)/CASE;
+				coin[1].x = (joueur.hitbox.x + joueur.hitbox.w)/CASE;
+				coin[1].y = (joueur.hitbox.y+joueur.hitbox.h+joueur.vitesse)/CASE;
+			}
+
+			break;
+			
+		case GAUCHE:
+		
+			if(joueur.hitbox.x >= joueur.vitesse) // Si il ne cherche pas  sortir de la map
+			{
+				coin[0].x = (joueur.hitbox.x-joueur.vitesse)/CASE;
+				coin[0].y = (joueur.hitbox.y)/CASE;
+				coin[1].x = (joueur.hitbox.x-joueur.vitesse)/CASE;
+				coin[1].y = (joueur.hitbox.y+joueur.hitbox.h)/CASE;
+			}
+
+			break;
+			
+		case DROITE:
+		
+			if(joueur.hitbox.x + joueur.hitbox.w + joueur.vitesse <= NB_CASES * CASE) // Si il ne cherche pas  sortir de la map
+			{
+				coin[0].x = (joueur.hitbox.x+joueur.hitbox.w+joueur.vitesse)/CASE;
+				coin[0].y = (joueur.hitbox.y)/CASE;
+				coin[1].x = (joueur.hitbox.x+joueur.hitbox.w+joueur.vitesse)/CASE;
+				coin[1].y = (joueur.hitbox.y+joueur.hitbox.h)/CASE;
+			}
+
+			break;
+	}
+	
+	// Vérification des collisions
+	
+	if(carte[coin[0].y][coin[0].x] == MUR || carte[coin[0].y][coin[0].x] == BRIQUE ||
+		carte[coin[1].y][coin[1].x] == MUR || carte[coin[1].y][coin[1].x] == BRIQUE)
+	{
+		return 1; // Le joueur ne peut pas avancer
+	}
+	
+	return VIDE;
+}
+
+
+
+void deplacerJoueur(Perso *joueur, int direction)
+{
+	
+	// Déplacement du joueur si une touche a été appuyée
+	
+	switch(direction)
+	{
+		case HAUT:
+			joueur->hitbox.y -= joueur->vitesse;
+			break;
+		case BAS:
+			joueur->hitbox.y += joueur->vitesse;
+			break;
+		case GAUCHE:
+			joueur->hitbox.x -= joueur->vitesse;
+			break;
+		case DROITE:
+			joueur->hitbox.x += joueur->vitesse;
+			break;
 				
 			/*case HAUT:
 			if(carte[(joueur->position.y-1)/CASE][joueur->position.x/CASE] == 0 && carte[(joueur->position.y-1)/CASE][(joueur->position.x+CASE_JOUEUR)/CASE] == 0)
@@ -352,12 +449,11 @@ void deplacerJoueur(Perso *joueur, int carte[][NB_CASES])
 			if(carte[(joueur->position.y)/CASE][joueur->position.x+CASE/CASE] == 0 && carte[(joueur->position.y+CASE)/CASE][(joueur->position.x+CASE)/CASE] == 0)
 				joueur->position.x += VITESSE;
 				break;*/
-		}
-		
-		// Redéfinition de la position de l'image du joueur grâce à la hitbox
-		joueur->position.x = joueur->hitbox.x;
-		joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h;
 	}
+		
+	// Redéfinition de la position de l'image du joueur grâce à la hitbox
+	joueur->position.x = joueur->hitbox.x - 4;
+	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h + 2;
 	
 	return;
 }
@@ -595,4 +691,6 @@ void entrainerExplosion(Liste *liste, Position posFlamme)
 	
 	return;
 }
+
+
 

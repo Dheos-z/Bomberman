@@ -73,13 +73,36 @@ en sorte qu'elle explose quand on la vérifie, et on la positionne au rang 1 dan
 bombesPosees pour que ce soit la prochaine à être vérifiéen dans entrainerExplosion(). 
 
 
-Tuer un joueur :
-Idée : On a défini la hitbox. Tant que des flammes sont présentes
+-Tuer un joueur :
+Idée : On a défini la hitbox. Tant que des flammes ou des items
+sont présents
 sur le terrain, on définit pour chaque joueur la position sur la
 carte de chacun des coins de la hitbox. Pour chaque coin on regarde
 si, sur la carte, le coin est présent sur une flamme.
 Si oui, le joueur est mort.
 
 
-Brûler des items : ça fonctionne déjà, lorsqu'elle rencontre un item elle
+-Brûler des items : ça fonctionne déjà, lorsqu'elle rencontre un item elle
 l'écrase en posant sa FLAMME
+
+
+
+* COLLISIONS (mus le gay)
+
+Lorsque le joueur cherche à aller dans une direction,
+on vérifie les positions sur la carte des 2 coins 
+considérés si le joueur avait
+avancé. S'il n'y a ni brique ni mur aux
+positions des 2 coins considérés, alors le joueur peut avancer,
+on renvoie la valeur correspondante.
+
+PAS FINI : SI LE JOUEUR PEUT AVANCER, ON DOIT REGARDER
+CE QU'IL SE TROUVE SUR CETTE POSITION ET AGIR EN FONCTION
+(ITEM, BOMBE ETC)
+
+* DEPLACEMENT DU JOUEUR
+
+Si le joueur a le droit de se déplacer dans la direction
+demandée, on fait avancer la hitbox de tant de pixels selon la
+vitesse du perso, et on redéfinit les positions sur la carte
+de chaque coin de la hitbox. Voilà.
