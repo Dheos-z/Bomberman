@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "constante.h"
 #include "jeu.h"
 #include "initialisations.h"
@@ -33,8 +34,9 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 }
 
 
-void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
+void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, char pseudo[])
 {
+	strcpy(joueur->pseudo, pseudo);
 	joueur->persoActuel = skinInitial; // On initialise le perso vers une direction
 	joueur->hitbox.x = posX; // Positions en pixels
 	joueur->hitbox.y = posY;
@@ -61,6 +63,8 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY)
 	joueur->coin[BD].y = joueur->hitbox.y + joueur->hitbox.h;
 	joueur->coin[BG].x = joueur->hitbox.x;
 	joueur->coin[BG].y = joueur->hitbox.y + joueur->hitbox.h;
+	
+	initialiserTouches(joueur);
 	
 	return;
 }

@@ -24,6 +24,16 @@ struct Liste
 	int nbItemsSurTerrain; // On l'utilise dans le cas d'une liste d'items
 };
 
+
+typedef struct ListePerso ListePerso;
+struct ListePerso
+{
+    int taille;
+	Perso *premier;
+};
+
+// Liste chaînée de bombes/items
+
 Liste* initialiserListe();
 void afficherListe(Liste *liste);
 Maillon *ajouterElementFin(Liste *liste, int instantBombe, Position posBombe, int puissanceBombe, Perso *joueur);
@@ -33,5 +43,10 @@ int supprimerElement(Liste *liste, int rang);
 Maillon *recupererElement(Liste *liste, int rang);
 void deplacerElement(Liste *liste, int rangDepart, int rangArrivee);
 Maillon *chercherElement(Position posBombe, Liste *liste, int *rang);
+
+// Liste chaînée de personnages
+
+ListePerso* initialiserListePerso();
+Perso *ajouterPersoFin(ListePerso *liste);
 
 #endif

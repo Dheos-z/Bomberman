@@ -175,7 +175,7 @@ int supprimerElement(Liste *liste, int rang)
 		return 0;
 	}
 	
-	return 1;
+	return 1; // Si il y a eu une erreur
 }
 
 
@@ -336,4 +336,94 @@ Maillon *chercherElement(Position pos, Liste *liste, int *rang)
 	}
 
 	return courant;
+}
+
+
+
+
+// FONCTIONS LISTES CHAINEES DE PERSONNAGES
+
+
+// Crée une liste chainée vide
+ListePerso* initialiserListePerso()
+{
+	ListePerso* liste = malloc(sizeof(ListePerso));
+
+	if(liste == NULL) // Si les allocations n'ont pas abouti
+	{
+		exit(EXIT_FAILURE);
+	}
+
+	liste->premier = NULL;
+	liste->taille = 0;
+
+	return liste;
+}
+
+
+// Ajouter un perso à la fin de la liste
+Perso *ajouterPersoFin(ListePerso *liste)
+{
+	Perso *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Perso));
+
+	if(!liste->taille) // Si la liste est vide
+	{
+		liste->premier = nouveau;
+	}
+	else // Si elle contient au moins 1 élément on peut parcourir les éléments
+	{
+		while(courant != NULL)
+		{
+			dernier = courant;
+			courant = courant->suivant;
+		}
+		// A ce stade, dernier est le dernier élément. Il pointe vers NULL. On peut accéder aux données du dernier élément
+		dernier->suivant = nouveau;
+	}
+	
+	nouveau->suivant = NULL;
+	liste->taille++;
+
+	return nouveau;
+}
+
+
+
+int supprimerPerso(ListePerso *liste, int rang)
+{
+	int i = 0;
+	Perso *precedentFinal = liste->premier, *suivantFinal = NULL, *maillonAsupprimer = NULL;
+	
+	if(liste->taille < 1 || rang < 0 || rang >= liste->taille)
+	{
+		printf("Erreur de saisie du rang, ou bien la liste est vide\n");
+	}
+	else
+	{
+		if(rang)
+		{
+			for(i=0; i<rang-1; i++)
+			{
+				precedentFinal = precedentFinal->suivant;
+			}
+			// Ici, precedentFinal vaut la case qui précèdera le nouvel élément
+			
+			maillonAsupprimer = precedentFinal->suivant;
+			suivantFinal = maillonAsupprimer->suivant;
+			
+			precedentFinal->suivant = suivantFinal;
+			free(maillonAsupprimer);
+		}
+		else // Si on veut supprimer le maillon au rang 0
+		{
+			maillonAsupprimer = precedentFinal;
+			liste->premier = precedentFinal->suivant;
+			free(maillonAsupprimer);
+		}
+		liste->taille--;
+		
+		return 0;
+	}
+	
+	return 1; // Si il y a eu une erreur
 }

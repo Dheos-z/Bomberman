@@ -15,13 +15,17 @@ struct Entite
 {
 	Position position;
 	
-	char bool; // Quand l'entité est une brique : booléenne qui indique si la bombe explosée a cassé une brique
+	char bool; // Quand l'entité est une brique : booléenne qui indique si la bombe explosée a cassé une brique (voir liste bombesExplosees)
+				// On l'utilise aussi dans verifierCollision() pour indiquer le joueur est sur quelle entité et
+				// à quelle position se trouve l'entité
 	
 };
 typedef struct Entite Entite;
 
+typedef struct Perso Perso;
 struct Perso
 {
+	char pseudo[10];
 	SDL_Surface *persoActuel; // Le skin du perso selon la direction dans laquelle il va
 	SDL_Rect position; // Position en pixels du coin en haut à gauche de la surface du personnage
 	SDL_Rect hitbox; // Position en pixels du coin en haut à gauche de la hitbox, et également ses dimensions (w et h)
@@ -34,8 +38,10 @@ struct Perso
 	int totalBombes;
 	int bombesRestantes;
 	int puissanceBombe;
+	
+	Perso *suivant;
 };
-typedef struct Perso Perso;
+
 
 
 #include "listes_chainees/bomberman_fct_listes_ch.h"
@@ -47,10 +53,10 @@ int jouerPartie(SDL_Surface* ecran);
 void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
 					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme, SDL_Surface *itemFlamme, 
 					SDL_Surface *itemBombe, SDL_Surface *itemPied, SDL_Surface *itemRoller);
-void blitterPerso(SDL_Surface *ecran, Perso joueur[], int nbJoueurs);
+void blitterPerso(SDL_Surface *ecran, ListePerso *joueurs);
 void afficherCarte(int carte[][NB_CASES]);
 int chercherDirection(int touche[]);
-int verifierDeplacement(Perso joueur, int direction, int carte[][NB_CASES]);
+int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur, int direction);
 void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
 int verifierDelai(int instant, int delai);

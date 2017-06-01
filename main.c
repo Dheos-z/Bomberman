@@ -1,11 +1,16 @@
 /* 31/5/17
  * 
  * Fait : 
- * Génération d'items
+ * Création d'une liste chaînée de persos à la place du tableau statique
+ * Modification de toutes les fonctions pour que ça marche bien
  * 
  * A faire : 
  * - Si une flamme touche un joueur le perso meurt (voir verifierCollision() )
  * - enlever l'ombre moche du sprite bomberman bas
+ * 
+ * PROBLEME : erreur de segmentation depuis que j'ai créé des pointeurs
+ * qui contiennent les adresses de chaque joueur (idJoueur[2]), et que je modifie les
+ * touches de chaque joueur grâce à ces pointeurs. Trouver le problème
  * 
  * 
  * Zak
