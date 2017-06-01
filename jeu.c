@@ -35,7 +35,7 @@ int jouerPartie(SDL_Surface* ecran)
 	idJoueur[0] = ajouterPersoFin(joueurs);
 	initJoueur(idJoueur[0], perso[BAS], CASE, CASE, "Jacques");
 	idJoueur[1] = ajouterPersoFin(joueurs);
-	initJoueur(idJoueur[0], perso[BAS], CASE, 13*CASE, "Gustave");
+	initJoueur(idJoueur[1], perso[BAS], CASE, 13*CASE, "Gustave");
 	
 	
 		// Lecture du niveau
@@ -100,7 +100,7 @@ int jouerPartie(SDL_Surface* ecran)
 							poserBombe(idJoueur[0], bombesPosees, carte);
 						}
 						break;
-						/*
+						
 					// TOUCHES JOUEUR 1
 					
 					case SDLK_z:
@@ -131,7 +131,7 @@ int jouerPartie(SDL_Surface* ecran)
 								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
 							poserBombe(idJoueur[1], bombesPosees, carte);
 						}
-						break;*/
+						break;
 				}	
 				break;
 				
@@ -164,7 +164,7 @@ int jouerPartie(SDL_Surface* ecran)
 						break;
 						
 					// TOUCHES JOUEUR 1
-					/*
+					
 					case SDLK_z:
 						idJoueur[1]->touche[HAUT] = 0;
 						break;
@@ -183,7 +183,7 @@ int jouerPartie(SDL_Surface* ecran)
 						
 					case SDLK_v:
 						idJoueur[1]->bombePosee = 0;
-						break;*/
+						break;
 				}
 				break;		
 		}
@@ -191,7 +191,7 @@ int jouerPartie(SDL_Surface* ecran)
 		// DEPLACEMENT DES JOUEURS
 		
 		joueur = joueurs->premier;
-		/*
+		
 		while(joueur != NULL)
 		{
 			
@@ -202,11 +202,11 @@ int jouerPartie(SDL_Surface* ecran)
 				deplacerJoueur(joueur, direction);
 			}
 			joueur = joueur->suivant;
-		}*/
+		}
 		
 		// TRAITEMENT DES BOMBES
 		
-		/*
+		
 		// Vérification des bombes qui attendent d'exploser
 		
 		if(bombesPosees->taille && verifierDelai(bombesPosees->premier->instant, DELAI_BOMBE))
@@ -223,24 +223,32 @@ int jouerPartie(SDL_Surface* ecran)
 				// Effacement de l'explosion de la 1ere bombe de la liste (en remplaçant les FLAMME par VIDE)
 			casserEntite(bombesExplosees->premier, carte, items);
 			supprimerElement(bombesExplosees, 0);
-		}*/
+		}
 		
 		
 		// VERIFICATION DE LA MORT DU JOUEUR ET DE LA PRISE D'UN ITEM
-		/*
+		
 		if(items->nbItemsSurTerrain || bombesExplosees->taille)
 		{
+			joueur = joueurs->premier;
+			
 			while(joueur != NULL)
 			{
-				entite = verifierCollision(joueur[i].coin, carte);
+				entite = verifierCollision(joueur->coin, carte);
 				
 				if(entite.bool == 1) // Si le joueur est sur une flamme
 				{
 					printf("\nJoueur %d est mort !\n", i);
 				}
-				else
+				else if(entite.bool == 2) // Si le joueur a chopé un item
+				{
+					printf("Oh! un item\n");
+					recupererItem(entite.position, carte, joueur);
+				}
+				
+				joueur = joueur->suivant;
 			}
-		}*/
+		}
 		
 		
 		
@@ -447,7 +455,7 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 
 void deplacerJoueur(Perso *joueur, int direction)
 {
-	int i = 0, vertical = 0, horizontal = 0;
+	int i = 0;
 	
 	// Déplacement du joueur si une touche a été appuyée
 	
@@ -455,19 +463,15 @@ void deplacerJoueur(Perso *joueur, int direction)
 	{
 		case HAUT:
 			joueur->hitbox.y -= joueur->vitesse;
-			vertical = -1;
 			break;
 		case BAS:
 			joueur->hitbox.y += joueur->vitesse;
-			vertical = 1;
 			break;
 		case GAUCHE:
 			joueur->hitbox.x -= joueur->vitesse;
-			horizontal = -1;
 			break;
 		case DROITE:
 			joueur->hitbox.x += joueur->vitesse;
-			horizontal = 1;
 			break;
 	}
 		
@@ -475,14 +479,17 @@ void deplacerJoueur(Perso *joueur, int direction)
 	joueur->position.x = joueur->hitbox.x - 4;
 	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h + 2;
 	
+	
 	// Redéfinition des positions sur la carte des coins
 	
-	
-	for(i=0; i<4; i++)
-	{
-		joueur->coin[i].x += horizontal*joueur->vitesse;
-		joueur->coin[i].y += vertical*joueur->vitesse;
-	}
+	joueur->coin[HG].x = joueur->hitbox.x/CASE;
+	joueur->coin[HG].y = joueur->hitbox.y/CASE;
+	joueur->coin[HD].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+	joueur->coin[HD].y = joueur->hitbox.y/CASE;
+	joueur->coin[BD].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+	joueur->coin[BD].y = (joueur->hitbox.y + joueur->hitbox.h)/CASE;
+	joueur->coin[BG].x = joueur->hitbox.x/CASE;
+	joueur->coin[BG].y = (joueur->hitbox.y + joueur->hitbox.h)/CASE;
 	
 	return;
 }
@@ -772,3 +779,29 @@ Entite verifierCollision(Position coin[], int carte[][NB_CASES])
 
 
 
+void recupererItem(Position posItem, int carte[][NB_CASES], Perso *joueur)
+{
+	switch(carte[posItem.y][posItem.x])
+	{
+		case ITEM_FLAMME:
+			joueur->puissanceBombe++;
+			break;
+			
+		case ITEM_BOMBE:
+			joueur->totalBombes++;
+			joueur->bombesRestantes++;
+			break;
+			
+		case ITEM_ROLLER:
+			joueur->vitesse++;
+			break;
+			
+		case ITEM_PIED:
+			printf("Le pied ne fait rien pour l'instant\n");
+			break;
+	}
+	
+	carte[posItem.y][posItem.x] = VIDE;
+	
+	return;
+}

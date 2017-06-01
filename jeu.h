@@ -66,6 +66,8 @@ int verifierFlamme(int carte[][NB_CASES], Position posFlamme);
 void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
 void casserEntite(Maillon *bombe, int carte[][NB_CASES], Liste *items);
 void entrainerExplosion(Liste *liste, Position posFlamme);
+Entite verifierCollision(Position coin[], int carte[][NB_CASES]);
+void recupererItem(Position posItem, int carte[][NB_CASES], Perso *joueur);
 
 
 #endif

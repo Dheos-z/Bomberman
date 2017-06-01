@@ -12,7 +12,7 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 	
 	*mur = SDL_LoadBMP("images/MUR.bmp");
 	*brique = SDL_LoadBMP("images/BRIQUE.bmp");
-	*bombe = SDL_LoadBMP("images/BOMBE.bmp");
+	*bombe = SDL_LoadBMP("images/bombe.bmp");
 	*flamme = SDL_LoadBMP("images/flamme.bmp");
 	*itemFlamme = SDL_LoadBMP("images/item_flamme.bmp");
 	*itemRoller = SDL_LoadBMP("images/item_roller.bmp");
@@ -29,6 +29,8 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 	{
 		SDL_SetColorKey(perso[i], SDL_SRCCOLORKEY, SDL_MapRGB(perso[i]->format, 255, 255, 0));
 	}
+	SDL_SetColorKey(*bombe, SDL_SRCCOLORKEY, SDL_MapRGB((*bombe)->format, 255, 255, 0));
+	SDL_SetColorKey(*flamme, SDL_SRCCOLORKEY, SDL_MapRGB((*flamme)->format, 255, 255, 0));
 	
 	return;
 }
@@ -55,14 +57,14 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, cha
 	joueur->puissanceBombe = 3;
 	joueur->vitesse = VITESSE;
 	
-	joueur->coin[HG].x = joueur->hitbox.x;
-	joueur->coin[HG].y = joueur->hitbox.y;
-	joueur->coin[HD].x = joueur->hitbox.x + joueur->hitbox.w;
-	joueur->coin[HD].y = joueur->hitbox.y;
-	joueur->coin[BD].x = joueur->hitbox.x + joueur->hitbox.w;
-	joueur->coin[BD].y = joueur->hitbox.y + joueur->hitbox.h;
-	joueur->coin[BG].x = joueur->hitbox.x;
-	joueur->coin[BG].y = joueur->hitbox.y + joueur->hitbox.h;
+	joueur->coin[HG].x = joueur->hitbox.x/CASE;
+	joueur->coin[HG].y = joueur->hitbox.y/CASE;
+	joueur->coin[HD].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+	joueur->coin[HD].y = joueur->hitbox.y/CASE;
+	joueur->coin[BD].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+	joueur->coin[BD].y = (joueur->hitbox.y + joueur->hitbox.h)/CASE;
+	joueur->coin[BG].x = joueur->hitbox.x/CASE;
+	joueur->coin[BG].y = (joueur->hitbox.y + joueur->hitbox.h)/CASE;
 	
 	initialiserTouches(joueur);
 	
