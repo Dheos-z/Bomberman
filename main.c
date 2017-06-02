@@ -1,13 +1,12 @@
-/* 1/6/17
+/* 2/6/17
  * 
  * Fait : 
- * 
+ * Collision des bombes
  * 
  * A faire : 
- * - enlever l'ombre moche du sprite bomberman bas
  * - Problème : flamme ne veut pas s'afficher correctement
  * - Faire l'écran titre
- * - Faire la mort du personnage
+ * - Faire la mort du personnage : problème : quand j'appelle supprimerPerso() le jeu freeze
  * 
  * 
  * Zak

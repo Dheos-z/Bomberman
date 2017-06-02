@@ -56,6 +56,7 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, cha
 	joueur->bombesRestantes = joueur[0].totalBombes;
 	joueur->puissanceBombe = 3;
 	joueur->vitesse = VITESSE;
+	joueur->assisSurBombe = 0;
 	
 	joueur->coin[HG].x = joueur->hitbox.x/CASE;
 	joueur->coin[HG].y = joueur->hitbox.y/CASE;

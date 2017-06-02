@@ -389,41 +389,31 @@ Perso *ajouterPersoFin(ListePerso *liste)
 
 
 
-int supprimerPerso(ListePerso *liste, int rang)
+void supprimerPerso(ListePerso *liste, Perso *joueur)
 {
-	int i = 0;
-	Perso *precedentFinal = liste->premier, *suivantFinal = NULL, *maillonAsupprimer = NULL;
+	Perso *courant = liste->premier, *joueurASupp = NULL;
 	
-	if(liste->taille < 1 || rang < 0 || rang >= liste->taille)
+	// Si le joueur à supprimer est le 1er de la liste
+	
+	if(courant == joueur) 
 	{
-		printf("Erreur de saisie du rang, ou bien la liste est vide\n");
-	}
-	else
-	{
-		if(rang)
-		{
-			for(i=0; i<rang-1; i++)
-			{
-				precedentFinal = precedentFinal->suivant;
-			}
-			// Ici, precedentFinal vaut la case qui précèdera le nouvel élément
-			
-			maillonAsupprimer = precedentFinal->suivant;
-			suivantFinal = maillonAsupprimer->suivant;
-			
-			precedentFinal->suivant = suivantFinal;
-			free(maillonAsupprimer);
-		}
-		else // Si on veut supprimer le maillon au rang 0
-		{
-			maillonAsupprimer = precedentFinal;
-			liste->premier = precedentFinal->suivant;
-			free(maillonAsupprimer);
-		}
-		liste->taille--;
-		
-		return 0;
+		joueurASupp = courant;
+		liste->premier = courant->suivant;
 	}
 	
-	return 1; // Si il y a eu une erreur
+	// Si le joueur à supprimer n'est pas le 1er de la liste
+	
+	while(courant != joueur && courant != NULL)
+	{
+		if(courant->suivant == joueur)
+		{
+			joueurASupp = courant->suivant;
+			courant->suivant = courant->suivant->suivant;
+		}
+	}
+	
+	free(joueurASupp);
+	liste->taille--;
+	
+	return;
 }

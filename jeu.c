@@ -15,7 +15,8 @@ int jouerPartie(SDL_Surface* ecran)
 	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL, *flamme = NULL, *itemBombe = NULL, *itemFlamme = NULL,
 				*itemPied = NULL, *itemRoller = NULL;
 	SDL_Surface *perso[4] = {NULL};
-	Perso *joueur = NULL, *idJoueur[2] = {NULL, NULL}; // joueur va parcourir la liste, idJoueur contient l'adresse de chaque joueur (indispensable quand on teste l'appui des touches)
+	Perso *joueur = NULL, *idJoueur[2] = {NULL, NULL}, *joueurASupp = {NULL}; 
+		// joueur va parcourir la liste, idJoueur contient l'adresse de chaque joueur (indispensable quand on teste l'appui des touches)
 	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0}, direction = 0;
 	Uint32 tempsActuel = 0;
 	Liste *bombesPosees = initialiserListe(), *bombesExplosees = initialiserListe(), *items = initialiserListe();
@@ -97,7 +98,7 @@ int jouerPartie(SDL_Surface* ecran)
 						{
 							idJoueur[0]->bombePosee = 1;
 								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
-							poserBombe(idJoueur[0], bombesPosees, carte);
+							poserBombe(idJoueur[0], bombesPosees, carte, joueurs);
 						}
 						break;
 						
@@ -129,7 +130,7 @@ int jouerPartie(SDL_Surface* ecran)
 						{
 							idJoueur[1]->bombePosee = 1;
 								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
-							poserBombe(idJoueur[1], bombesPosees, carte);
+							poserBombe(idJoueur[1], bombesPosees, carte, joueurs);
 						}
 						break;
 				}	
@@ -228,9 +229,11 @@ int jouerPartie(SDL_Surface* ecran)
 		
 		// VERIFICATION DE LA MORT DU JOUEUR ET DE LA PRISE D'UN ITEM
 		
+		
 		if(items->nbItemsSurTerrain || bombesExplosees->taille)
 		{
 			joueur = joueurs->premier;
+			
 			
 			while(joueur != NULL)
 			{
@@ -238,12 +241,16 @@ int jouerPartie(SDL_Surface* ecran)
 				
 				if(entite.bool == 1) // Si le joueur est sur une flamme
 				{
-					printf("\nJoueur %d est mort !\n", i);
+					joueurASupp = joueur;
+					printf("\n%s t'es mort gros pd\n", joueurASupp->pseudo);
+					supprimerPerso(joueurs, joueurASupp);
+					printf("Il reste %d joueurs\n", joueurs->taille);
 				}
 				else if(entite.bool == 2) // Si le joueur a chopé un item
 				{
 					printf("Oh! un item\n");
 					recupererItem(entite.position, carte, joueur);
+					joueur = joueur->suivant;
 				}
 				
 				joueur = joueur->suivant;
@@ -251,6 +258,12 @@ int jouerPartie(SDL_Surface* ecran)
 		}
 		
 		
+		// VERIFICATION DE LA FIN D'UNE PARTIE
+		
+		if(!joueurs->taille)
+		{
+			continuer = 0;
+		}
 		
 		
 		// MAJ DE L'ECRAN, COLLAGE DES SURFACES
@@ -260,6 +273,7 @@ int jouerPartie(SDL_Surface* ecran)
 		blitterPerso(ecran, joueurs);
 		SDL_Flip(ecran);
 	}
+	
 	
 	// LIBERATION DES SURFACES
 	
@@ -381,12 +395,13 @@ int chercherDirection(int touche[]) // Permet de détecter la direction dans laq
 }
 
 
-
+// Ceci peut être fait plus proprement (avec moins de répétition) avec des coeff 1 ou -1
 int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 {
-	Position coin[2];
+	Position coinArriere[2], coinAvant[2], coinArriereJoueur[2], coinAvantJoueur[2];
 	
-	// Définition des 2 coins
+	// Définition des 4 coins de la hitbox comme si il s'était déjà déplacé
+	
 	
 	switch(direction)
 	{
@@ -394,10 +409,20 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 			
 			if(joueur->hitbox.y >= joueur->vitesse) // Si il ne cherche pas  sortir de la map
 			{
-				coin[0].x = (joueur->hitbox.x)/CASE;
-				coin[0].y = (joueur->hitbox.y-joueur->vitesse)/CASE;
-				coin[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
-				coin[1].y = (joueur->hitbox.y-joueur->vitesse)/CASE;
+				coinAvantJoueur[0] = joueur->coin[0];
+				coinAvantJoueur[1] = joueur->coin[1];
+				coinArriereJoueur[0] = joueur->coin[3];
+				coinArriereJoueur[1] = joueur->coin[2];
+				
+				coinAvant[0].x = (joueur->hitbox.x)/CASE;
+				coinAvant[0].y = (joueur->hitbox.y-joueur->vitesse)/CASE;
+				coinAvant[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+				coinAvant[1].y = (joueur->hitbox.y-joueur->vitesse)/CASE;
+				
+				coinArriere[0].x = (joueur->hitbox.x)/CASE;
+				coinArriere[0].y = (joueur->hitbox.y+joueur->hitbox.h-joueur->vitesse)/CASE;
+				coinArriere[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+				coinArriere[1].y = (joueur->hitbox.y+joueur->hitbox.h-joueur->vitesse)/CASE;
 			}
 
 			
@@ -407,10 +432,20 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 		
 			if(joueur->hitbox.y + joueur->hitbox.h + joueur->vitesse <= NB_CASES * CASE) // Si il ne cherche pas  sortir de la map
 			{
-				coin[0].x = (joueur->hitbox.x)/CASE;
-				coin[0].y = (joueur->hitbox.y+joueur->hitbox.h+joueur->vitesse)/CASE;
-				coin[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
-				coin[1].y = (joueur->hitbox.y+joueur->hitbox.h+joueur->vitesse)/CASE;
+				coinAvantJoueur[0] = joueur->coin[3];
+				coinAvantJoueur[1] = joueur->coin[2];
+				coinArriereJoueur[0] = joueur->coin[0];
+				coinArriereJoueur[1] = joueur->coin[1];
+				
+				coinAvant[0].x = (joueur->hitbox.x)/CASE;
+				coinAvant[0].y = (joueur->hitbox.y+joueur->hitbox.h+joueur->vitesse)/CASE;
+				coinAvant[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+				coinAvant[1].y = (joueur->hitbox.y+joueur->hitbox.h+joueur->vitesse)/CASE;
+				
+				coinArriere[0].x = (joueur->hitbox.x)/CASE;
+				coinArriere[0].y = (joueur->hitbox.y+joueur->vitesse)/CASE;
+				coinArriere[1].x = (joueur->hitbox.x + joueur->hitbox.w)/CASE;
+				coinArriere[1].y = (joueur->hitbox.y+joueur->vitesse)/CASE;
 			}
 
 			break;
@@ -419,10 +454,20 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 		
 			if(joueur->hitbox.x >= joueur->vitesse) // Si il ne cherche pas  sortir de la map
 			{
-				coin[0].x = (joueur->hitbox.x-joueur->vitesse)/CASE;
-				coin[0].y = (joueur->hitbox.y)/CASE;
-				coin[1].x = (joueur->hitbox.x-joueur->vitesse)/CASE;
-				coin[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
+				coinAvantJoueur[0] = joueur->coin[0];
+				coinAvantJoueur[1] = joueur->coin[3];
+				coinArriereJoueur[0] = joueur->coin[1];
+				coinArriereJoueur[1] = joueur->coin[2];
+				
+				coinAvant[0].x = (joueur->hitbox.x-joueur->vitesse)/CASE;
+				coinAvant[0].y = (joueur->hitbox.y)/CASE;
+				coinAvant[1].x = (joueur->hitbox.x-joueur->vitesse)/CASE;
+				coinAvant[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
+				
+				coinArriere[0].x = (joueur->hitbox.x+joueur->hitbox.w-joueur->vitesse)/CASE;
+				coinArriere[0].y = (joueur->hitbox.y)/CASE;
+				coinArriere[1].x = (joueur->hitbox.x+joueur->hitbox.w-joueur->vitesse)/CASE;
+				coinArriere[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
 			}
 
 			break;
@@ -431,10 +476,20 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 		
 			if(joueur->hitbox.x + joueur->hitbox.w + joueur->vitesse <= NB_CASES * CASE) // Si il ne cherche pas  sortir de la map
 			{
-				coin[0].x = (joueur->hitbox.x+joueur->hitbox.w+joueur->vitesse)/CASE;
-				coin[0].y = (joueur->hitbox.y)/CASE;
-				coin[1].x = (joueur->hitbox.x+joueur->hitbox.w+joueur->vitesse)/CASE;
-				coin[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
+				coinAvantJoueur[0] = joueur->coin[1];
+				coinAvantJoueur[1] = joueur->coin[2];
+				coinArriereJoueur[0] = joueur->coin[0];
+				coinArriereJoueur[1] = joueur->coin[3];
+				
+				coinAvant[0].x = (joueur->hitbox.x+joueur->hitbox.w+joueur->vitesse)/CASE;
+				coinAvant[0].y = (joueur->hitbox.y)/CASE;
+				coinAvant[1].x = (joueur->hitbox.x+joueur->hitbox.w+joueur->vitesse)/CASE;
+				coinAvant[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
+				
+				coinArriere[0].x = (joueur->hitbox.x+joueur->vitesse)/CASE;
+				coinArriere[0].y = (joueur->hitbox.y)/CASE;
+				coinArriere[1].x = (joueur->hitbox.x+joueur->vitesse)/CASE;
+				coinArriere[1].y = (joueur->hitbox.y+joueur->hitbox.h)/CASE;
 			}
 
 			break;
@@ -442,11 +497,32 @@ int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 	
 	// Vérification des collisions
 	
-	if(carte[coin[0].y][coin[0].x] == MUR || carte[coin[0].y][coin[0].x] == BRIQUE ||
-		carte[coin[1].y][coin[1].x] == MUR || carte[coin[1].y][coin[1].x] == BRIQUE)
+	if(carte[coinAvant[0].y][coinAvant[0].x] == MUR || carte[coinAvant[0].y][coinAvant[0].x] == BRIQUE ||
+		carte[coinAvant[1].y][coinAvant[1].x] == MUR || carte[coinAvant[1].y][coinAvant[1].x] == BRIQUE ||
+		(joueur->assisSurBombe == 0 && (carte[coinAvant[0].y][coinAvant[0].x] == BOMBE || carte[coinAvant[1].y][coinAvant[1].x] == BOMBE)))
 	{
 		return 1; // Le joueur ne peut pas avancer
 	}
+	else if(joueur->assisSurBombe == 1)
+	{
+		if(carte[coinAvant[0].y][coinAvant[0].x] == VIDE
+		    && carte[coinAvant[1].y][coinAvant[1].x] == VIDE && carte[coinArriere[0].y][coinArriere[0].x] == VIDE
+		    && carte[coinArriere[1].y][coinArriere[1].x] == VIDE) // Si il n'est plus assis sur sa bombe
+		{
+			joueur->assisSurBombe = 0;
+		}
+		else if(carte[coinAvant[0].y][coinAvant[0].x] == BOMBE || carte[coinAvant[1].y][coinAvant[1].x] == BOMBE)
+				// Si il est sur une bombe mais il cherche à avancer sur une autre bombe située à côté
+		{
+			if(coinAvant[0].x != coinAvantJoueur[0].x || coinAvant[0].y != coinAvantJoueur[0].y)
+				// Si un des 2 coins avants n'est pas sur la même case que les coins avant initiaux du joueur,
+				// c'est qu'il cherche à marcher sur une autre bombe
+			{
+				return 1;
+			}
+		}
+		
+	} 
 	
 	return VIDE;
 }
@@ -496,10 +572,11 @@ void deplacerJoueur(Perso *joueur, int direction)
 
 
 
-void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
+void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES], ListePerso *joueurs)
 {
 	Position repereBombe;
 	int instantBombe = 0;
+	Entite entite;
 	
 	repereBombe.x = (joueur->hitbox.x + (joueur->hitbox.w)/2)/CASE;
 	repereBombe.y = (joueur->hitbox.y + joueur->hitbox.h - 10)/CASE;
@@ -512,6 +589,25 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES])
 	ajouterElementFin(bombesPosees, instantBombe, repereBombe, joueur->puissanceBombe, joueur);
 		// Ajoute l'instant auquel la bombe a été posée, ainsi que ses positions dans la carte
 	joueur->bombesRestantes--;
+	
+	// Finalement, non seulement on veut indiquer que le joueur qui vient de poser la bombe
+	// est assis sur une bombe, mais on veut aussi vérifier si les autres joueurs sont assis
+	// sur cette même bombe
+	
+	joueur = joueurs->premier;
+	
+	while(joueur != NULL)
+	{
+		entite = verifierCollision(joueur->coin, carte);
+		
+		if(entite.bool == 3) // Si le joueur considéré est présent sur la bombe
+		{
+			joueur->assisSurBombe = 1;
+			printf("%s est assis sur une bombe !\n", joueur->pseudo);
+		}
+		
+		joueur = joueur->suivant;
+	}
 	
 	return;
 }
@@ -771,6 +867,10 @@ Entite verifierCollision(Position coin[], int carte[][NB_CASES])
 			entite.bool = 2;
 			entite.position.x = coin[i].x;
 			entite.position.y = coin[i].y;
+		}
+		else if(carte[coin[i].y][coin[i].x] == BOMBE) // cette condition est utilisée dans poserBombe()
+		{
+			entite.bool = 3;
 		}
 	}
 	

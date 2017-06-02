@@ -33,6 +33,8 @@ struct Perso
 	
 	int touche[4]; // Tableau de booléennes qui indiquent si la touche correspondante est appuyée
 	int bombePosee; // Booléenne qui indique si la touche de pose de bombe est actuellement appuyée
+	int assisSurBombe; // Vaut 1 lorsque le joueur a posé une bombe et qu'il est 
+					   // dessus (il peut avancer dessus, mais ne peut pas poser de bombe)
 	
 	int vitesse;
 	int totalBombes;
@@ -58,7 +60,7 @@ void afficherCarte(int carte[][NB_CASES]);
 int chercherDirection(int touche[]);
 int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES]);
 void deplacerJoueur(Perso *joueur, int direction);
-void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES]);
+void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES], ListePerso *joueurs);
 int verifierDelai(int instant, int delai);
 void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees);
 void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees);

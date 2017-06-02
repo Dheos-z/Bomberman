@@ -48,5 +48,6 @@ Maillon *chercherElement(Position posBombe, Liste *liste, int *rang);
 
 ListePerso* initialiserListePerso();
 Perso *ajouterPersoFin(ListePerso *liste);
+void supprimerPerso(ListePerso *liste, Perso *joueur);
 
 #endif
