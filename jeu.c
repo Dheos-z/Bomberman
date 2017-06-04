@@ -292,7 +292,7 @@ int chercherDirection(int touche[]) // Permet de détecter la direction dans laq
 }
 
 
-// Ceci peut être fait plus proprement (avec moins de répétition) avec des coeff 1 ou -1
+// Ceci pourrait être fait plus proprement (avec moins de répétition) avec des coeff 1 ou -1
 int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES])
 {
 	Position coinArriere[2], coinAvant[2], coinArriereJoueur[2], coinAvantJoueur[2];
@@ -826,7 +826,7 @@ int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_
 		idJoueur[0]->touche[GAUCHE] = touche[J1_GAUCHE];
 		idJoueur[0]->touche[DROITE] = touche[J1_DROITE];
 		
-		if(touche[J1_POSER_BOMBE] && !idJoueur[0]->bombePosee)
+		if(touche[J1_POSER_BOMBE] && !idJoueur[0]->bombePosee && !idJoueur[0]->assisSurBombe)
 		{
 			bombeAPoser[0] = 1;
 		}
@@ -842,7 +842,7 @@ int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_
 		idJoueur[1]->touche[GAUCHE] = touche[J2_GAUCHE];
 		idJoueur[1]->touche[DROITE] = touche[J2_DROITE];
 		
-		if(touche[J2_POSER_BOMBE] && !idJoueur[1]->bombePosee)
+		if(touche[J2_POSER_BOMBE] && !idJoueur[1]->bombePosee && !idJoueur[1]->assisSurBombe)
 		{
 			bombeAPoser[1] = 1;
 		}
@@ -858,7 +858,7 @@ int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_
 		idJoueur[2]->touche[GAUCHE] = touche[J3_GAUCHE];
 		idJoueur[2]->touche[DROITE] = touche[J3_DROITE];
 		
-		if(touche[J3_POSER_BOMBE] && !idJoueur[2]->bombePosee)
+		if(touche[J3_POSER_BOMBE] && !idJoueur[2]->bombePosee && !idJoueur[2]->assisSurBombe)
 		{
 			bombeAPoser[2] = 1;
 		}
@@ -874,7 +874,7 @@ int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_
 		idJoueur[3]->touche[GAUCHE] = touche[J4_GAUCHE];
 		idJoueur[3]->touche[DROITE] = touche[J4_DROITE];
 		
-		if(touche[J4_POSER_BOMBE] && !idJoueur[3]->bombePosee)
+		if(touche[J4_POSER_BOMBE] && !idJoueur[3]->bombePosee && !idJoueur[3]->assisSurBombe)
 		{
 			bombeAPoser[3] = 1;
 		}

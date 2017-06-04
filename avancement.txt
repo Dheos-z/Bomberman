@@ -1,6 +1,7 @@
 Ce fichier sert à expliquer chaque étape du jeu réalisée. Ca permet de 
-comprendre le code source et ça sera utile pour la présentation du projet
-de fin de semestre.
+comprendre le code source et ça sera utile pour le rapport du projet
+de fin de semestre. Ne rien écrire là-dedans, mais on peut s'inspirer de ce fichier
+pour écrire le rapport.
 
 * Affichage de la carte :
 Le niveau est écrit dans carte.txt, chaque chiffre correspond à un élément de
@@ -73,7 +74,7 @@ en sorte qu'elle explose quand on la vérifie, et on la positionne au rang 1 dan
 bombesPosees pour que ce soit la prochaine à être vérifiéen dans entrainerExplosion(). 
 
 
--Tuer un joueur :
+- Tuer un joueur :
 Idée : On a défini la hitbox. Tant que des flammes ou des items
 sont présents
 sur le terrain, on définit pour chaque joueur la position sur la
