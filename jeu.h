@@ -25,7 +25,7 @@ typedef struct Entite Entite;
 typedef struct Perso Perso;
 struct Perso
 {
-	char pseudo[10];
+	int numero;
 	SDL_Surface *persoActuel; // Le skin du perso selon la direction dans laquelle il va
 	SDL_Rect position; // Position en pixels du coin en haut à gauche de la surface du personnage
 	SDL_Rect hitbox; // Position en pixels du coin en haut à gauche de la hitbox, et également ses dimensions (w et h)
@@ -70,6 +70,7 @@ void casserEntite(Maillon *bombe, int carte[][NB_CASES], Liste *items);
 void entrainerExplosion(Liste *liste, Position posFlamme);
 Entite verifierCollision(Position coin[], int carte[][NB_CASES]);
 void recupererItem(Position posItem, int carte[][NB_CASES], Perso *joueur);
+int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_Surface *perso[]);
 
 
 #endif

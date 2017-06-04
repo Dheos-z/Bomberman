@@ -51,6 +51,35 @@ typedef struct Objet Objet;
 #define BD 2
 #define BG 3
 
+
+// TOUCHES JOUEURS
+
+#define J1_HAUT SDLK_UP
+#define J1_BAS SDLK_DOWN
+#define J1_GAUCHE SDLK_LEFT
+#define J1_DROITE SDLK_RIGHT
+#define J1_POSER_BOMBE SDLK_RCTRL
+
+#define J2_HAUT SDLK_z
+#define J2_BAS SDLK_s
+#define J2_GAUCHE SDLK_q
+#define J2_DROITE SDLK_d
+#define J2_POSER_BOMBE SDLK_x
+
+#define J3_HAUT SDLK_y
+#define J3_BAS SDLK_h
+#define J3_GAUCHE SDLK_g
+#define J3_DROITE SDLK_j
+#define J3_POSER_BOMBE SDLK_n
+
+#define J4_HAUT SDLK_RIGHTPAREN
+#define J4_BAS SDLK_CARET
+#define J4_GAUCHE SDLK_p
+#define J4_DROITE SDLK_DOLLAR
+#define J4_POSER_BOMBE SDLK_RSHIFT
+
+
+
 // AUTRES
 
 #define VITESSE 2

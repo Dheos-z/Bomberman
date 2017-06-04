@@ -17,10 +17,7 @@ Liste* initialiserListe()
 {
 	Liste* liste = malloc(sizeof(Liste));
 
-	if(liste == NULL) // Si les allocations n'ont pas abouti
-	{
-		exit(EXIT_FAILURE);
-	}
+	verifierErreurAllocation((void*)liste);
 
 	liste->premier = NULL;
 	liste->taille = 0;
@@ -54,6 +51,8 @@ Maillon *ajouterElementFin(Liste *liste, int instantBombe, Position posBombe, in
 {
 	Maillon *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Maillon));
 	int i = 0;
+	
+	verifierErreurAllocation((void*)nouveau);
 
 	if(!liste->taille) // Si la liste est vide
 	{
@@ -99,6 +98,8 @@ Maillon *ajouterElementFin(Liste *liste, int instantBombe, Position posBombe, in
 void ajouterMaillonDebut(Liste *liste, int nombre)
 {
     Maillon *nouveau = malloc(sizeof(Maillon));
+    
+    verifierErreurAllocation((void*)nouveau);
 
     nouveau->suivant = liste->premier;
     nouveau->instant = nombre;
@@ -114,6 +115,8 @@ void ajouterMaillonMilieu(Liste *liste, int nombre, int indice)
 {
     int i = 0;
     Maillon *precedentFinal = liste->premier, *nouveau = malloc(sizeof(Maillon)), *suivantFinal = NULL;
+    
+    verifierErreurAllocation((void*)nouveau);
 
     if(liste->taille < 2 || indice >= liste->taille || indice < 1)
     {
@@ -348,6 +351,8 @@ Maillon *chercherElement(Position pos, Liste *liste, int *rang)
 ListePerso* initialiserListePerso()
 {
 	ListePerso* liste = malloc(sizeof(ListePerso));
+	
+	verifierErreurAllocation((void*)liste);
 
 	if(liste == NULL) // Si les allocations n'ont pas abouti
 	{
@@ -365,6 +370,8 @@ ListePerso* initialiserListePerso()
 Perso *ajouterPersoFin(ListePerso *liste)
 {
 	Perso *courant = liste->premier, *dernier = NULL, *nouveau = malloc(sizeof(Perso));
+	
+	verifierErreurAllocation((void*)nouveau);
 
 	if(!liste->taille) // Si la liste est vide
 	{
@@ -392,28 +399,65 @@ Perso *ajouterPersoFin(ListePerso *liste)
 void supprimerPerso(ListePerso *liste, Perso *joueur)
 {
 	Perso *courant = liste->premier, *joueurASupp = NULL;
+	int bool = 0;
 	
-	// Si le joueur à supprimer est le 1er de la liste
 	
-	if(courant == joueur) 
+	if(courant == joueur) // Si le joueur à supprimer est le 1er de la liste
 	{
 		joueurASupp = courant;
 		liste->premier = courant->suivant;
 	}
-	
-	// Si le joueur à supprimer n'est pas le 1er de la liste
-	
-	while(courant != joueur && courant != NULL)
+	else // Si le joueur à supprimer n'est pas le 1er de la liste
 	{
-		if(courant->suivant == joueur)
+		while(courant != NULL && bool != 1)
 		{
-			joueurASupp = courant->suivant;
-			courant->suivant = courant->suivant->suivant;
-		}
+			if(courant->suivant == joueur)
+			{
+				bool = 1;
+				joueurASupp = courant->suivant;
+				courant->suivant = courant->suivant->suivant;
+			}
+			
+			if(!bool)
+			{
+				courant = courant->suivant;
+			}
+		}	
 	}
+	
 	
 	free(joueurASupp);
 	liste->taille--;
 	
 	return;
 }
+
+
+// Affiche la liste des prénoms de chaque perso
+void afficherListePerso(ListePerso *liste)
+{
+	Perso *courant = liste->premier;
+	
+	printf("Taille de la liste : %d\n", liste->taille);
+
+	while(courant != NULL)
+	{
+		printf("Joueur %d\n", courant->numero);
+		courant = courant->suivant; // On parcoure la liste
+	}
+	printf("\n");
+
+	return;
+}
+
+
+void verifierErreurAllocation(void *pointeur)
+{
+	if(pointeur == NULL)
+	{
+		exit(EXIT_FAILURE);
+	}
+	
+	return;
+}
+

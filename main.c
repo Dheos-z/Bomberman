@@ -1,13 +1,13 @@
-/* 2/6/17
+/* 4/6/17
  * 
  * Fait : 
- * Collision des bombes
+ * Nouveau système de touches
  * 
  * A faire : 
  * - Problème : flamme ne veut pas s'afficher correctement
  * - Faire l'écran titre
- * - Faire la mort du personnage : problème : quand j'appelle supprimerPerso() le jeu freeze
- * 
+ * - Problème : je peux poser une bombe sur une autre
+ * - Problème : quand au moins un joueur est mort, le jeu plante si j'essaye de poser un bombe avec le joueur 4
  * 
  * Zak
  */

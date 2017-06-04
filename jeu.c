@@ -13,15 +13,14 @@ int jouerPartie(SDL_Surface* ecran)
 {
 	SDL_Event event;
 	SDL_Surface *mur = NULL, *brique = NULL, *bombe = NULL, *flamme = NULL, *itemBombe = NULL, *itemFlamme = NULL,
-				*itemPied = NULL, *itemRoller = NULL;
-	SDL_Surface *perso[4] = {NULL};
-	Perso *joueur = NULL, *idJoueur[2] = {NULL, NULL}, *joueurASupp = {NULL}; 
+				*itemPied = NULL, *itemRoller = NULL, *perso[4] = {NULL};
+	Perso *joueur = NULL, *idJoueur[4] = {NULL}, *joueurASupp = NULL; 
 		// joueur va parcourir la liste, idJoueur contient l'adresse de chaque joueur (indispensable quand on teste l'appui des touches)
-	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, nbJoueurs = 2, murACasser[4] = {0}, direction = 0;
-	Uint32 tempsActuel = 0;
+	int carte[NB_CASES][NB_CASES] = {0}, continuer = 1, i = 0, direction = 0, *bombeAPoser = NULL;
 	Liste *bombesPosees = initialiserListe(), *bombesExplosees = initialiserListe(), *items = initialiserListe();
 	ListePerso *joueurs = initialiserListePerso();
 	Entite entite;
+	Uint8 *touche = SDL_GetKeyState(NULL); // Tableau de booléens qui représente chaque touche et indique si la touche est appuyée
 		
 	// INITIALISATIONS
 	
@@ -34,9 +33,13 @@ int jouerPartie(SDL_Surface* ecran)
 		// (Modèle : void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, char pseudo[]) )
 		
 	idJoueur[0] = ajouterPersoFin(joueurs);
-	initJoueur(idJoueur[0], perso[BAS], CASE, CASE, "Jacques");
+	initJoueur(idJoueur[0], perso[BAS], CASE, CASE, 1);
 	idJoueur[1] = ajouterPersoFin(joueurs);
-	initJoueur(idJoueur[1], perso[BAS], CASE, 13*CASE, "Gustave");
+	initJoueur(idJoueur[1], perso[BAS], CASE, 13*CASE, 2);
+	idJoueur[2] = ajouterPersoFin(joueurs);
+	initJoueur(idJoueur[2], perso[BAS], 13*CASE, 13*CASE, 3);
+	idJoueur[3] = ajouterPersoFin(joueurs);
+	initJoueur(idJoueur[3], perso[BAS], 13*CASE, CASE, 4);
 	
 	
 		// Lecture du niveau
@@ -54,140 +57,27 @@ int jouerPartie(SDL_Surface* ecran)
 	{
 		SDL_PollEvent(&event); // Activation des événements en mode continu
 		
-		switch(event.type)
+		
+		// GESTION DES TOUCHES
+		
+		if(touche[SDLK_ESCAPE])
+			continuer = 0;
+		
+		bombeAPoser = verifierTouches(idJoueur, joueurs, touche, perso); // Renvoie le tableau qui indique si chaque joueur essaye de poser une bombe
+		
+		
+		
+		// POSE DE BOMBE
+		
+		for(i=0; i<joueurs->taille; i++)
 		{
-			case SDL_QUIT: // Si on appuie sur la croix
-				continuer = 0;
-				break;
-				
-			// APPUI SUR UNE TOUCHE
-				
-        	case SDL_KEYDOWN:
-				
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						continuer = 0; // La touche ECHAP permet de quitter le jeu
-						break;
-
-					// TOUCHES JOUEUR 0
-					
-					case SDLK_UP:
-						idJoueur[0]->touche[HAUT] = 1;
-						idJoueur[0]->persoActuel = perso[HAUT];
-						break;
-
-					case SDLK_DOWN:
-						idJoueur[0]->touche[BAS] = 1;
-						idJoueur[0]->persoActuel = perso[BAS];
-						break;
-
-					case SDLK_LEFT:
-						idJoueur[0]->touche[GAUCHE] = 1;
-						idJoueur[0]->persoActuel = perso[GAUCHE];
-						break;
-
-					case SDLK_RIGHT:
-						idJoueur[0]->touche[DROITE] = 1;
-						idJoueur[0]->persoActuel = perso[DROITE];
-						break;
-						
-					case SDLK_RCTRL: // Poser une bombe
-						if(idJoueur[0]->bombesRestantes && !idJoueur[0]->bombePosee)
-							// Si il lui reste une bombe ET qu'il est pas déjà en train d'appuyer sur la touche
-						{
-							idJoueur[0]->bombePosee = 1;
-								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
-							poserBombe(idJoueur[0], bombesPosees, carte, joueurs);
-						}
-						break;
-						
-					// TOUCHES JOUEUR 1
-					
-					case SDLK_z:
-						idJoueur[1]->touche[HAUT] = 1;
-						idJoueur[1]->persoActuel = perso[HAUT];
-						break;
-
-					case SDLK_s:
-						idJoueur[1]->touche[BAS] = 1;
-						idJoueur[1]->persoActuel = perso[BAS];
-						break;
-
-					case SDLK_q:
-						idJoueur[1]->touche[GAUCHE] = 1;
-						idJoueur[1]->persoActuel = perso[GAUCHE];
-						break;
-
-					case SDLK_d:
-						idJoueur[1]->touche[DROITE] = 1;
-						idJoueur[1]->persoActuel = perso[DROITE];
-						break;
-						
-					case SDLK_v:
-						if(idJoueur[1]->bombesRestantes && !idJoueur[1]->bombePosee)
-							// Si il lui reste une bombe ET qu'il est pas déjà en train d'appuyer sur la touche
-						{
-							idJoueur[1]->bombePosee = 1;
-								// Booléenne qui indique qu'il est en train d'appuyer sur la touche
-							poserBombe(idJoueur[1], bombesPosees, carte, joueurs);
-						}
-						break;
-				}	
-				break;
-				
-			// RELACHEMENT D'UNE TOUCHE
-				
-        	case SDL_KEYUP:
-				
-				switch(event.key.keysym.sym)
-				{
-					// TOUCHES JOUEUR 0
-					
-					case SDLK_UP:
-						idJoueur[0]->touche[HAUT] = 0;
-						break;
-
-					case SDLK_DOWN:
-						idJoueur[0]->touche[BAS] = 0;
-						break;
-
-					case SDLK_LEFT:
-						idJoueur[0]->touche[GAUCHE] = 0;
-						break;
-
-					case SDLK_RIGHT:
-						idJoueur[0]->touche[DROITE] = 0;
-						break;
-						
-					case SDLK_RCTRL: // La touche de pose de bombe est relachée
-						idJoueur[0]->bombePosee = 0;
-						break;
-						
-					// TOUCHES JOUEUR 1
-					
-					case SDLK_z:
-						idJoueur[1]->touche[HAUT] = 0;
-						break;
-
-					case SDLK_s:
-						idJoueur[1]->touche[BAS] = 0;
-						break;
-
-					case SDLK_q:
-						idJoueur[1]->touche[GAUCHE] = 0;
-						break;
-
-					case SDLK_d:
-						idJoueur[1]->touche[DROITE] = 0;
-						break;
-						
-					case SDLK_v:
-						idJoueur[1]->bombePosee = 0;
-						break;
-				}
-				break;		
+			if(bombeAPoser[i])
+			{
+				poserBombe(idJoueur[i], bombesPosees, carte, joueurs);
+			}
 		}
+		
+
 		
 		// DEPLACEMENT DES JOUEURS
 		
@@ -204,6 +94,8 @@ int jouerPartie(SDL_Surface* ecran)
 			}
 			joueur = joueur->suivant;
 		}
+		
+		
 		
 		// TRAITEMENT DES BOMBES
 		
@@ -242,9 +134,9 @@ int jouerPartie(SDL_Surface* ecran)
 				if(entite.bool == 1) // Si le joueur est sur une flamme
 				{
 					joueurASupp = joueur;
-					printf("\n%s t'es mort gros pd\n", joueurASupp->pseudo);
+					joueur = joueur->suivant;
+					idJoueur[joueurASupp->numero-1] = NULL;
 					supprimerPerso(joueurs, joueurASupp);
-					printf("Il reste %d joueurs\n", joueurs->taille);
 				}
 				else if(entite.bool == 2) // Si le joueur a chopé un item
 				{
@@ -252,18 +144,23 @@ int jouerPartie(SDL_Surface* ecran)
 					recupererItem(entite.position, carte, joueur);
 					joueur = joueur->suivant;
 				}
-				
-				joueur = joueur->suivant;
+				else
+				{
+					joueur = joueur->suivant;
+				}
 			}
 		}
 		
 		
+		
 		// VERIFICATION DE LA FIN D'UNE PARTIE
 		
-		if(!joueurs->taille)
+		if(joueurs->taille == 1)
 		{
 			continuer = 0;
+			printf("Fin de la partie !\nBravo Joueur %d !!\n", joueurs->premier->numero);
 		}
+		
 		
 		
 		// MAJ DE L'ECRAN, COLLAGE DES SURFACES
@@ -603,7 +500,6 @@ void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES], Liste
 		if(entite.bool == 3) // Si le joueur considéré est présent sur la bombe
 		{
 			joueur->assisSurBombe = 1;
-			printf("%s est assis sur une bombe !\n", joueur->pseudo);
 		}
 		
 		joueur = joueur->suivant;
@@ -904,4 +800,102 @@ void recupererItem(Position posItem, int carte[][NB_CASES], Perso *joueur)
 	carte[posItem.y][posItem.x] = VIDE;
 	
 	return;
+}
+
+
+
+int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_Surface *perso[])
+{
+	int i = 0, *bombeAPoser = malloc(joueurs->taille*sizeof(int));
+	Perso *courant = joueurs->premier;
+	
+	verifierErreurAllocation(bombeAPoser);
+	
+	for(i=0; i<joueurs->taille; i++)
+	{
+		bombeAPoser[i] = 0;
+	}
+	
+	
+	// Joueur 1
+	
+	if(idJoueur[0] != NULL)
+	{
+		idJoueur[0]->touche[HAUT] = touche[J1_HAUT];
+		idJoueur[0]->touche[BAS] = touche[J1_BAS];
+		idJoueur[0]->touche[GAUCHE] = touche[J1_GAUCHE];
+		idJoueur[0]->touche[DROITE] = touche[J1_DROITE];
+		
+		if(touche[J1_POSER_BOMBE] && !idJoueur[0]->bombePosee)
+		{
+			bombeAPoser[0] = 1;
+		}
+		idJoueur[0]->bombePosee = touche[J1_POSER_BOMBE];
+	}
+	
+	// Joueur 2
+	
+	if(idJoueur[1] != NULL)
+	{
+		idJoueur[1]->touche[HAUT] = touche[J2_HAUT];
+		idJoueur[1]->touche[BAS] = touche[J2_BAS];
+		idJoueur[1]->touche[GAUCHE] = touche[J2_GAUCHE];
+		idJoueur[1]->touche[DROITE] = touche[J2_DROITE];
+		
+		if(touche[J2_POSER_BOMBE] && !idJoueur[1]->bombePosee)
+		{
+			bombeAPoser[1] = 1;
+		}
+		idJoueur[1]->bombePosee = touche[J2_POSER_BOMBE];
+	}
+	
+	// Joueur 3
+	
+	if(idJoueur[2] != NULL)
+	{
+		idJoueur[2]->touche[HAUT] = touche[J3_HAUT];
+		idJoueur[2]->touche[BAS] = touche[J3_BAS];
+		idJoueur[2]->touche[GAUCHE] = touche[J3_GAUCHE];
+		idJoueur[2]->touche[DROITE] = touche[J3_DROITE];
+		
+		if(touche[J3_POSER_BOMBE] && !idJoueur[2]->bombePosee)
+		{
+			bombeAPoser[2] = 1;
+		}
+		idJoueur[2]->bombePosee = touche[J3_POSER_BOMBE];
+	}
+	
+	// Joueur 4
+	
+	if(idJoueur[3] != NULL)
+	{
+		idJoueur[3]->touche[HAUT] = touche[J4_HAUT];
+		idJoueur[3]->touche[BAS] = touche[J4_BAS];
+		idJoueur[3]->touche[GAUCHE] = touche[J4_GAUCHE];
+		idJoueur[3]->touche[DROITE] = touche[J4_DROITE];
+		
+		if(touche[J4_POSER_BOMBE] && !idJoueur[3]->bombePosee)
+		{
+			bombeAPoser[3] = 1;
+		}
+		idJoueur[3]->bombePosee = touche[J4_POSER_BOMBE];
+	}
+	
+	
+	// Orientation des joueurs
+	
+	while(courant != NULL)
+	{
+		for(i=0; i<4; i++)
+		{
+			if(courant->touche[i])
+			{
+				courant->persoActuel = perso[i];
+			}
+		}
+		
+		courant = courant->suivant;
+	}
+	
+	return bombeAPoser;
 }

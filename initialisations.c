@@ -36,9 +36,9 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 }
 
 
-void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, char pseudo[])
+void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, int numero)
 {
-	strcpy(joueur->pseudo, pseudo);
+	joueur->numero = numero;
 	joueur->persoActuel = skinInitial; // On initialise le perso vers une direction
 	joueur->hitbox.x = posX; // Positions en pixels
 	joueur->hitbox.y = posY;
