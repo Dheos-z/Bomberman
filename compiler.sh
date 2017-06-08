@@ -8,4 +8,5 @@ PRG="jeu"
 
 gcc *.c listes_chainees/*.c -o $PRG -lSDL
 
-echo "Le programme a été compilé sous le nom de $PRG"
+echo "Si la compilation n'a généré aucune erreur,"
+echo "lancez le programme en tapant ./$PRG"

@@ -13,6 +13,7 @@ struct Maillon
 						les 4 directions (à définir au moment où elle explose) */
 	Entite entite[4]; // Pour chaque direction, indique si l'entité (brique ou item) peut se casser et à quelle position
 	Maillon *suivant;
+	
 	int type; // Dans le cas où l'élément est un item : type de l'item
 };
 

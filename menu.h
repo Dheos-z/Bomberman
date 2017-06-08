@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-void menujeu(void);
+int menujeu(SDL_Surface *ecran);
 
 
 

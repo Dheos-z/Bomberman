@@ -1,7 +1,5 @@
 
-/* Dans le cadre de notre jeu, les fonctions qu'on utilise sont
- * initialiserListe(), afficherListe(), ajouterElementFin() et supprimerElement().
- * On a modifié les fonctions de base pour qu'elles correspondent bien à ce
+/* On a modifié les fonctions de base de notre bibliothèque de fonctions pour listes chaînées pour qu'elles correspondent bien à ce
  * qu'on veut faire dans le jeu.
  */
 
@@ -9,7 +7,8 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include "../constante.h"
-#include "../jeu.h" // bomberman_fct_listes_ch.h déjà inclus dans jeu.h donc pas besoin de l'inclure ici
+#include "../jeu.h"
+#include "bomberman_fct_listes_ch.h"
 
 
 // Crée une liste chainée vide

@@ -1,29 +1,84 @@
-# Bomberman
-Projet info
 
-A faire
+SUPER BOMBERMAN
 
-Lire le niveau dans un fichier
-Créer une structure personnage : skin, vitesse, puissance de bombe,
-nombres de bombes qu'il peut poser, malédiction
-Permettre au personnage de bouger en gérant les touches directionnelles
-Gérer les collisions
-Permettre au personnage de poser des bombes
-Faire exploser la bombe après un délai t
-Gérer l'animation qui schématise la portée de la bombe
-(Plus tard : créer une structure bombe, quand il y aura des bombes spéciales)
-Permettre au perso de casser les murs à l'aide de ses bombes
-Le personnage meurt si il se prend une flamme
-Créer une structure item : flamme, bombe, malédiction, roller
-Avoir une chance 1/x de générer un item après chaque mur cassé
-Un item doit booster une caractéristique du personnage
-Lorsque le personnage meurt, tous les items qu'ils a ramassé sont éparpillés
-aléatoirement sur la map
-Instaurer le mode 4 joueurs avec la gestion des mouvements de chacun
-Terminer la partie quand il reste 1 joueur ou que tous les joueurs sont morts
-Afficher un message de victoire
+Développeurs : 
+- Zakaria YAKDI
+- Mustapha MASTOUR
+
+Ecole :
+Institut des Sciences et Techniques des Yvelines (UVSQ)
+
+__________________________________________________________________
 
 
-Bonus :
-Développer une IA
-Pouvoir changer les skins en mettant des personnages de l'isty
+COMMENT JOUER SUR GNU/LINUX ?
+
+
+ETAPE 1 : Télécharger la bibliothèque graphique SDL 1.2
+
+-> Ouvrez un terminal et tapez la commande suivante :
+sudo apt-get install libsdl1.2-dev
+
+
+ETAPE 2 : Décompresser l'archive "Bomberman.tar.gz"
+
+-> Placez-vous dans le terminal à l'endroit où se trouve l'archive "Bomberman.tar.gz" et tapez les commandes suivantes :
+gunzip Bomberman.tar.gz
+tar -xvf Bomberman.tar
+cd Bomberman
+
+
+ETAPE 3 : Compiler le code source
+
+-> Vous êtes normalement dans le répertoire "Bomberman". Tapez la commande suivante :
+./compiler.sh
+
+
+ETAPE 4 : Exécuter le programme
+
+-> Enfin, tapez la commande suivante et le jeu se lancera :
+./jeu
+
+
+__________________________________________________________________
+
+
+TOUCHES DU JEU
+
+Menu 
+
+-> Se déplacer : flèches directionnelles Haut et Bas
+-> sélectionner le mode : Espace
+
+Joueur 1
+
+-> Haut :Flèche haut
+-> Bas : Flèche bas
+-> Gauche : Flèche gauche
+-> Droite : Flèche droite
+-> Poser bombe : Ctrl (celui de droite)
+
+Joueur 2 :
+
+-> Haut : z
+-> Bas : s
+-> Gauche : q
+-> Droite : d
+-> Poser bombe : x
+
+Joueur 3 :
+
+-> Haut : y
+-> Bas : h 
+-> Gauche : g
+-> Droite : j
+-> Poser bombe : n
+
+Joueur 4 :
+
+-> Haut : )
+-> Bas : ^
+-> Gauche : p
+-> Droite : $
+-> Poser bombe : Shift (celui de droite)
+

@@ -35,9 +35,6 @@ typedef struct Objet Objet;
 #define ITEM_ROLLER 8
 #define ITEM_PIED 9
 
-#define PROBA_FLAMME 2 // 1 chance sur PROBA_FLAMME d'obtenir un item flamme
-#define PROBA_BOMBE 2
-
 // DIRECTIONS
 
 #define HAUT 0
@@ -82,13 +79,12 @@ typedef struct Objet Objet;
 
 // AUTRES
 
-#define VITESSE 2
-#define MAX 100
-#define DELAI_BOMBE 2000 // En millisecondes
+#define VITESSE 3
+#define DELAI_BOMBE 2500 // En millisecondes
 #define DELAI_FLAMMES 800
-#define NB_ITEM_FLAMME 3
-#define NB_ITEM_BOMBE 3
-#define NB_ITEM_ROLLER 1
+#define NB_ITEM_FLAMME 12
+#define NB_ITEM_BOMBE 12
+#define NB_ITEM_ROLLER 5
 #define NB_ITEM_PIED 0
 #define NB_ITEMS NB_ITEM_BOMBE+NB_ITEM_FLAMME+NB_ITEM_PIED+NB_ITEM_ROLLER
 

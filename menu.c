@@ -4,110 +4,113 @@
 #include "menu.h"
 
 
-void menujeu(void)
+int menujeu(SDL_Surface *ecran)
 {
-  SDL_Surface *un = NULL, *deux = NULL, *quitter = NULL, *ecran = NULL, *menu = NULL;
-  SDL_Rect positionMenu, positionUn, positionDeux, positionQuit;
+  SDL_Surface *deux = SDL_LoadBMP("images/2J.bmp"), *trois = SDL_LoadBMP("images/3J.bmp"), *quatre = SDL_LoadBMP("images/4J.bmp"),
+			  *deuxSelect = SDL_LoadBMP("images/2J_SELECTION.bmp"), *troisSelect = SDL_LoadBMP("images/3J_SELECTION.bmp"), *quatreSelect = SDL_LoadBMP("images/4J_SELECTION.bmp"),
+			  *quitter = SDL_LoadBMP("images/QUIT.bmp"), *quitterSelect = SDL_LoadBMP("images/QUIT_SELECTION.bmp"), *menu = SDL_LoadBMP("images/menu.bmp"), *selection = SDL_LoadBMP("images/2J.bmp");
+  SDL_Rect positionMenu, positionDeux, positionTrois, positionQuatre, positionQuit, positionSelect;
   SDL_Event event;
-  int continuer = 1, choixmenu = 0;
+  Uint8 *touche = SDL_GetKeyState(NULL); // Tableau de booléens qui représente chaque touche et indique si la touche est appuyée
+  int choix = 2, continuer = 1;
 
-  // LANCER LA SDL
-
-  SDL_Init(SDL_INIT_VIDEO);
 
   positionMenu.x = 0;
   positionMenu.y = 0;
 
-  positionUn.x = 200;
-  positionUn.y = 225;
-
-  positionDeux.x = 200;
-  positionDeux.y = 300;
+  positionDeux.x = (menu->w-deux->w)/2;
+  positionDeux.y = 200;
   
-  positionQuit.x = 200;
-  positionQuit.y = 375;
+  positionTrois.x = positionDeux.x;
+  positionTrois.y = positionDeux.y + deux->h + 20;
+  
+  positionQuatre.x = positionDeux.x;
+  positionQuatre.y = positionTrois.y + trois->h + 20;
+  
+  positionQuit.x = positionDeux.x;
+  positionQuit.y = positionQuatre.y + quatre->h + 20;
 
-  //INITIALISATION DE LA FENETRE
 
-  ecran = SDL_SetVideoMode(675, 675, 32, SDL_HWSURFACE);
-  SDL_WM_SetCaption("Bomberman", NULL);
-
-  menu = SDL_LoadBMP("menu.bmp");
-  un = SDL_LoadBMP("1J_SELECTION.bmp");
-  deux = SDL_LoadBMP("2J.bmp");
-  quitter = SDL_LoadBMP("QUIT.bmp");
-
-  // BOUCLE D'EVENEMENT 
+  // Choix du mode
 
   while(continuer)
   {
     SDL_WaitEvent(&event);
-
-    switch (event.type)
-    {
-      case SDL_QUIT:
-        continuer = 0;
-        break;
-      case SDL_KEYDOWN:
-      switch(event.key.keysym.sym)
-      {
-        case SDLK_DOWN:
-            choixmenu ++; 
-            break;
-
-        case SDLK_UP: 
-            choixmenu--;
-            break;
-      }
-    }
     
     
-	// HISTOIRE DE SAVOIR QUEL RUBRIQUE DOIT ETRE ALLUMÉ
-
-    if(choixmenu == 0)
-    {
-      un = SDL_LoadBMP("1J_SELECTION.bmp");
-      deux = SDL_LoadBMP("2J.bmp");
-      quitter = SDL_LoadBMP("QUIT.bmp");
-    }
-    else if(choixmenu == 1)
-    {
-      deux = SDL_LoadBMP("2J_SELECTION.bmp");
-      un = SDL_LoadBMP("1J.bmp");
-      quitter = SDL_LoadBMP("QUIT.bmp");
-    }
-    else if(choixmenu == 2)
-    {
-      quitter = SDL_LoadBMP("QUIT_SELECTION.bmp");
-      un = SDL_LoadBMP("1J.bmp");
-      deux = SDL_LoadBMP("2J.bmp");
-    }
-
-    if(choixmenu < 0)
-    {
-      choixmenu = 2;
-    }
-    else if(choixmenu > 2)
-    {
-      choixmenu = 0;
-    }
+	if(touche[SDLK_ESCAPE] || event.type == SDL_QUIT)
+	{
+		continuer = 0;
+		choix = 5;
+	}
+	else if(touche[SDLK_DOWN])
+	{
+		choix++;
+	}
+	else if(touche[SDLK_UP])
+	{
+		choix--;
+	}
+	else if(touche[SDLK_SPACE])
+	{
+		continuer = 0;
+	}
+	
+	
+	if(choix > 5)
+	{
+		choix = 2;
+	}
+	else if(choix < 2)
+	{
+		choix = 5;
+	}
+	
+	
+	switch(choix)
+	{
+		case 2:
+			selection = deuxSelect;
+			positionSelect = positionDeux;
+			break;
+		case 3:
+			selection = troisSelect;
+			positionSelect = positionTrois;
+			break;
+		case 4: 
+			selection = quatreSelect;
+			positionSelect = positionQuatre;
+			break;
+		case 5:
+			selection = quitterSelect;
+			positionSelect = positionQuit;
+			break;
+	}
 
 
   
-	// BLITSURFACE
+	// Collage des surfaces et màj de l'écran
 
+	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255)); // Fond de la fenêtre : blanc
 	SDL_BlitSurface(menu, NULL, ecran, &positionMenu);
-	SDL_BlitSurface(un, NULL, ecran, &positionUn);
 	SDL_BlitSurface(deux, NULL, ecran, &positionDeux);
+	SDL_BlitSurface(trois, NULL, ecran, &positionTrois);
+	SDL_BlitSurface(quatre, NULL, ecran, &positionQuatre);
 	SDL_BlitSurface(quitter, NULL, ecran, &positionQuit);
-
-
-	// MAJ DE L'ECRAN
+	SDL_BlitSurface(selection, NULL, ecran, &positionSelect);
 	
 	SDL_Flip(ecran);
   }
   
-  return;
+  // Libération des surfaces
+  
+  SDL_FreeSurface(menu);
+  SDL_FreeSurface(deux);
+  SDL_FreeSurface(trois);
+  SDL_FreeSurface(quatre);
+  SDL_FreeSurface(quitter);
+  
+  return choix;
 }
 
 

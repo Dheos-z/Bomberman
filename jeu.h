@@ -46,31 +46,10 @@ struct Perso
 
 
 
-#include "listes_chainees/bomberman_fct_listes_ch.h"
-
-
 // FONCTIONS
 
-int jouerPartie(SDL_Surface* ecran);
-void blitterSurfaces(SDL_Surface *ecran, int carte[][NB_CASES], SDL_Surface *mur, 
-					SDL_Surface *brique, SDL_Surface *bombe, SDL_Surface *flamme, SDL_Surface *itemFlamme, 
-					SDL_Surface *itemBombe, SDL_Surface *itemPied, SDL_Surface *itemRoller);
-void blitterPerso(SDL_Surface *ecran, ListePerso *joueurs);
-void afficherCarte(int carte[][NB_CASES]);
-int chercherDirection(int touche[]);
-int verifierDeplacement(Perso *joueur, int direction, int carte[][NB_CASES]);
-void deplacerJoueur(Perso *joueur, int direction);
-void poserBombe(Perso *joueur, Liste *bombesPosees, int carte[][NB_CASES], ListePerso *joueurs);
-int verifierDelai(int instant, int delai);
-void exploserBombe(int carte[][NB_CASES], Maillon *bombe, Liste *bombesPosees, Liste *bombesExplosees);
-void determinerPortee(int carte[][NB_CASES], Maillon *bombeExplosee, Liste *bombesPosees);
-int verifierFlamme(int carte[][NB_CASES], Position posFlamme);
-void afficherExplosion(int carte[][NB_CASES], Maillon *bombe, int icone);
-void casserEntite(Maillon *bombe, int carte[][NB_CASES], Liste *items);
-void entrainerExplosion(Liste *liste, Position posFlamme);
-Entite verifierCollision(Position coin[], int carte[][NB_CASES]);
-void recupererItem(Position posItem, int carte[][NB_CASES], Perso *joueur);
-int* verifierTouches(Perso *idJoueur[], ListePerso *joueurs, Uint8 *touche, SDL_Surface *perso[]);
+int jouerPartie(SDL_Surface* ecran, int nbJoueurs);
+
 
 
 #endif

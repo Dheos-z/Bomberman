@@ -1,15 +1,8 @@
-/* 4/6/17
+/* 
+ * SUPER BOMBERMAN
+ * Développé par Zakaria YAKDI et Mustapha MASTOUR
  * 
- * Fait : 
- * Nouveau système de touches
- * 
- * A faire : 
- * - Problème : flamme ne veut pas s'afficher correctement
- * - Faire l'écran titre
- * - Problème : je peux poser une bombe sur une autre
- * - Problème : quand au moins un joueur est mort, le jeu plante si j'essaye de poser un bombe avec le joueur 4
- * 
- * Zak
+ * Veuillez lire le README avant de jouer
  */
 
 
@@ -26,8 +19,8 @@
 
 int main(void)
 {
+	int choix = 0, retourMenu = 1;
     SDL_Surface *ecran = NULL;
-    SDL_Event event;
     
     // INITIALISATIONS
     
@@ -38,7 +31,22 @@ int main(void)
     SDL_WM_SetCaption("Bomberman", NULL);
     
     
-    jouerPartie(ecran);
+    // MENU
+    
+    while(retourMenu)
+    {
+		choix = menujeu(ecran);
+		
+		if(choix != 5) // Si l'on ne cherche pas à qutitter le programme
+		{
+			retourMenu = jouerPartie(ecran, choix);
+		}
+		else
+		{
+			retourMenu = 0;
+		}
+	}
+
     
     SDL_Quit();
     

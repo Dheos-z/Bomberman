@@ -3,6 +3,7 @@
 #include <string.h>
 #include "constante.h"
 #include "jeu.h"
+#include "listes_chainees/bomberman_fct_listes_ch.h"
 #include "initialisations.h"
 
 void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, SDL_Surface **flamme, 
@@ -30,7 +31,6 @@ void initSurfaces(SDL_Surface **mur, SDL_Surface **brique, SDL_Surface **bombe, 
 		SDL_SetColorKey(perso[i], SDL_SRCCOLORKEY, SDL_MapRGB(perso[i]->format, 255, 255, 0));
 	}
 	SDL_SetColorKey(*bombe, SDL_SRCCOLORKEY, SDL_MapRGB((*bombe)->format, 255, 255, 0));
-	SDL_SetColorKey(*flamme, SDL_SRCCOLORKEY, SDL_MapRGB((*flamme)->format, 255, 255, 0));
 	
 	return;
 }
@@ -47,14 +47,11 @@ void initJoueur(Perso *joueur, SDL_Surface *skinInitial, int posX, int posY, int
 
 	joueur->position.x = joueur->hitbox.x - 4;
 	joueur->position.y = joueur->hitbox.y + joueur->hitbox.h - joueur->persoActuel->h + 2;
-	/*printf("Perso : pos(%d,%d) taille(%d,%d)\nHitbox : pos(%d,%d) taille(%d,%d)\n",
-			joueur->position.x, joueur->position.y, joueur->persoActuel->w, joueur->persoActuel->h,
-			joueur->hitbox.x, joueur->hitbox.y, joueur->hitbox.w, joueur->hitbox.h);*/
 	
 	joueur->bombePosee = 0;
-	joueur->totalBombes = 10;
-	joueur->bombesRestantes = joueur[0].totalBombes;
-	joueur->puissanceBombe = 3;
+	joueur->totalBombes = 1;
+	joueur->bombesRestantes = joueur->totalBombes;
+	joueur->puissanceBombe = 2;
 	joueur->vitesse = VITESSE;
 	joueur->assisSurBombe = 0;
 	
@@ -137,7 +134,6 @@ void genererItems(Liste *items, int carte[][NB_CASES])
 		item = ajouterElementFin(items, 0, pos, 0, NULL);
 		item->type = itemCourant;
 		
-		printf("(%d,%d)\n", pos.x, pos.y);
 		
 		// Système qui permet de définir quand est-ce qu'on doit changer d'item à placer
 		if(i+1 == bool[0]*NB_ITEM_FLAMME + bool[1]*NB_ITEM_BOMBE + bool[2]*NB_ITEM_ROLLER + bool[3]*NB_ITEM_PIED)
